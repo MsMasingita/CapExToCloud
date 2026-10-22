@@ -1,6 +1,6 @@
 // src/components/ScreenBriefing.tsx
 import React, { useState } from 'react';
-import { Briefcase, AlertTriangle, ArrowRight, CheckCircle2, DollarSign, Server, Cloud } from 'lucide-react';
+import { ArrowRight, BookOpen, RotateCw } from 'lucide-react';
 
 interface ScreenBriefingProps {
   onProceed: () => void;
@@ -8,122 +8,115 @@ interface ScreenBriefingProps {
 }
 
 export const ScreenBriefing: React.FC<ScreenBriefingProps> = ({ onProceed }) => {
-  const [selectedReply, setSelectedReply] = useState<number | null>(null);
+  const [flippedCard, setFlippedCard] = useState<string | null>(null);
 
-  const replyOptions = [
+  const conceptCards = [
     {
-      id: 1,
-      text: "Understood, Thandi. Buying 20 physical servers is a classic CapEx trap—we'd sink thousands into hardware that sits idle 28 days a month. We need elasticity and an OpEx cloud model like Azure.",
-      tag: "Recommended Strategy"
+      id: 'on-prem',
+      title: 'Flip: On-Premises',
+      concept: 'Physical server hardware owned and maintained locally in a company facility.',
+      application: 'SoleSpace basement servers overheating during flash sneaker drops.'
     },
     {
-      id: 2,
-      text: "Crystal clear. On-premises hardware can't handle spiky flash sales without over-provisioning. Let's scrap the physical server purchase and design an auto-scaling cloud architecture.",
-      tag: "Action-Oriented"
+      id: 'cloud',
+      title: 'Flip: Cloud Computing',
+      concept: 'On-demand delivery of IT resources over the internet with pay-as-you-go pricing.',
+      application: 'Renting virtual compute instantly during 15,000 shopper traffic spikes.'
+    },
+    {
+      id: 'capex-opex',
+      title: 'Flip: CapEx vs. OpEx',
+      concept: 'CapEx is upfront hardware spending; OpEx is ongoing operational consumption.',
+      application: 'Avoiding KES 40,000 server purchases by paying only for active drop compute.'
     }
   ];
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6 animate-fadeIn">
+    <div className="max-w-5xl mx-auto px-4 py-8 md:py-12 space-y-8 animate-fadeIn">
       {/* Header Banner */}
-      <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl space-y-2">
-        <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
-          <AlertTriangle className="w-4 h-4" /> Stage 1: Operational Emergency
+      <div className="space-y-1">
+        <div className="text-amber-400 text-xs font-bold uppercase tracking-wider">
+          STAGE 1: THE BUSINESS WITHOUT A SERVER ROOM
         </div>
-        <h1 className="text-xl md:text-2xl font-black text-white">
-          The Business Without a Server Room
-        </h1>
-        <p className="text-sm text-slate-400">
-          Review the IT Operations Manager briefing memo below and select your strategic response.
-        </p>
       </div>
 
-      {/* Thandi Mokoena's Briefing Memo */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
+      {/* Thandi Mokoena's Briefing Memo Card */}
+      <div className="bg-slate-900/90 border border-emerald-500/30 rounded-2xl p-6 md:p-8 space-y-4 shadow-xl relative overflow-hidden">
         <div className="flex items-center justify-between border-b border-slate-800 pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center font-bold text-emerald-400">
+            <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center font-bold text-emerald-400 border border-emerald-500/30">
               TM
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white">Thandi Mokoena</h2>
-              <p className="text-xs text-slate-400">IT Operations Manager • SoleSpace E-Commerce</p>
+              <h2 className="text-sm md:text-base font-bold text-white">
+                Thandi Mokoena, <span className="text-slate-400 font-normal">IT Operations Manager</span>
+              </h2>
+              <p className="text-xs text-slate-400 font-semibold uppercase">
+                SUBJECT: Basement Server Room Outage &amp; Flash Sneaker Drops
+              </p>
             </div>
           </div>
-          <span className="text-[10px] bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded-full font-semibold border border-amber-500/30">
-            Mandatory Briefing
+          <span className="text-xs bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full font-bold border border-amber-500/30">
+            Badquers
           </span>
         </div>
 
-        <blockquote className="text-sm text-slate-200 leading-relaxed italic border-l-2 border-emerald-500 pl-4 py-1">
-          &ldquo;Morning Intern, welcome to SoleSpace. I wish we had time for coffee, but we have an emergency. Yesterday was our exclusive Nairobi &amp; Jo&apos;burg sneaker drop. Within 4 minutes, 15,000 concurrent shoppers flooded our custom storefront. Our on-premises servers in the office basement overheated, our backup power tripped, and customers hit 504 Gateway Timeouts. We lost thousands in sales. The founders want to budget KES 40,000 to buy 20 more physical servers. I told them that&apos;s financial suicide—those servers will sit idle and burn electricity for 28 days every month until the next drop.&rdquo;
-        </blockquote>
+        <div className="text-slate-300 text-sm md:text-base leading-relaxed space-y-3">
+          <p>Morning Intern,</p>
+          <p>
+            Our last limited-edition sneaker drop had buyers flooding us from Nairobi to Cape Town. Within 4 minutes, our <span className="text-emerald-400 font-semibold underline">on-premises servers</span> in the office basement overheated, our local power backup tripped, and 12,000 shoppers hit a 504 Gateway Error.
+          </p>
+          <p>
+            We have no <span className="text-emerald-400 font-semibold underline">budget</span> to buy another 20 physical machines, wire high-voltage cooling, and hire an on-site security guard just for a flash sale that lasts 2 hours. We need a <span className="text-emerald-400 font-semibold underline">flexible computing</span> strategy.
+          </p>
+          <p className="text-slate-400 font-medium pt-2">
+            Review these 3 key concepts before you propose a solution.
+          </p>
+        </div>
       </div>
 
-      {/* Interactive Intern Reply Selection */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
-        <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-          <Briefcase className="w-4 h-4" /> Select Your Professional Response to Thandi
+      {/* Interactive Concept Strip (Directly beneath memo as requested by Louisa) */}
+      <div className="space-y-3">
+        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+          Interactive concept strip
         </h3>
 
-        <div className="grid grid-cols-1 gap-3">
-          {replyOptions.map((option) => (
-            <div
-              key={option.id}
-              onClick={() => setSelectedReply(option.id)}
-              className={`p-4 rounded-xl border transition-all cursor-pointer flex items-start gap-3 ${
-                selectedReply === option.id
-                  ? 'bg-emerald-500/10 border-emerald-500 text-white shadow-lg shadow-emerald-500/5'
-                  : 'bg-slate-950/60 border-slate-800 text-slate-300 hover:border-slate-700'
-              }`}
-            >
-              <div className="mt-0.5">
-                {selectedReply === option.id ? (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {conceptCards.map((card) => {
+            const isFlipped = flippedCard === card.id;
+            return (
+              <div
+                key={card.id}
+                onClick={() => setFlippedCard(isFlipped ? null : card.id)}
+                className="bg-slate-900/80 hover:bg-slate-900 border border-emerald-500/30 hover:border-emerald-400 rounded-xl p-4 transition-all cursor-pointer min-h-[110px] flex flex-col justify-between shadow-lg"
+              >
+                <div className="flex items-center justify-between text-emerald-400 text-xs font-bold">
+                  <span className="flex items-center gap-2">
+                    <BookOpen className="w-4 h-4" /> {card.title}
+                  </span>
+                  <RotateCw className="w-3.5 h-3.5 text-slate-500" />
+                </div>
+
+                {isFlipped ? (
+                  <p className="text-xs text-slate-200 mt-2 leading-relaxed animate-fadeIn">
+                    <strong className="text-emerald-400">SoleSpace:</strong> {card.application}
+                  </p>
                 ) : (
-                  <div className="w-5 h-5 rounded-full border border-slate-700" />
+                  <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                    {card.concept}
+                  </p>
                 )}
               </div>
-              <div className="space-y-1 flex-1">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs font-semibold text-amber-400">{option.tag}</span>
-                </div>
-                <p className="text-xs md:text-sm">{option.text}</p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
-      {/* Core Concept Flip Strip Preview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-2">
-          <Server className="w-5 h-5 text-amber-400" />
-          <h4 className="text-xs font-bold text-white uppercase">On-Premises Trap</h4>
-          <p className="text-xs text-slate-400">100% hardware responsibility, physical cooling overhead, and rigid scaling limits.</p>
-        </div>
-        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-2">
-          <Cloud className="w-5 h-5 text-emerald-400" />
-          <h4 className="text-xs font-bold text-white uppercase">Cloud Elasticity</h4>
-          <p className="text-xs text-slate-400">Auto-scaling instances instantly when 15,000 shoppers arrive, minimizing waste.</p>
-        </div>
-        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-2">
-          <DollarSign className="w-5 h-5 text-amber-400" />
-          <h4 className="text-xs font-bold text-white uppercase">CapEx vs OpEx</h4>
-          <p className="text-xs text-slate-400">Swapping heavy upfront iron purchases for a flexible, consumption-based operational budget.</p>
-        </div>
-      </div>
-
-      {/* Proceed Button */}
-      <div className="flex justify-end pt-2">
+      {/* Orange Proceed Button (Matching Wireframe Image 2 Exactly) */}
+      <div className="flex justify-end pt-4">
         <button
-          disabled={selectedReply === null}
           onClick={onProceed}
-          className={`px-6 py-3 rounded-xl font-bold text-xs md:text-sm flex items-center gap-2 transition-all cursor-pointer ${
-            selectedReply !== null
-              ? 'bg-emerald-500 hover:bg-emerald-600 text-slate-950 shadow-lg shadow-emerald-500/20'
-              : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
-          }`}
+          className="px-8 py-3.5 rounded-xl font-black text-xs md:text-sm flex items-center gap-2 transition-all cursor-pointer bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 shadow-lg shadow-amber-500/20 ring-1 ring-amber-400/50"
         >
           Proceed to Decision Analysis (+25 XP) <ArrowRight className="w-4 h-4" />
         </button>
