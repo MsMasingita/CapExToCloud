@@ -1,6 +1,6 @@
 // src/ResourceDrawer.tsx
 import React, { useState } from 'react';
-import { X, BookOpen, Layers, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { X, BookOpen } from 'lucide-react';
 
 interface ResourceDrawerProps {
   isOpen: boolean;

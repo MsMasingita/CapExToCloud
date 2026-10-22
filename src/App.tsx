@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ScreenOnboarding } from './components/ScreenOnboarding';
 import { ScreenBriefing } from './components/ScreenBriefing';
 import { ScreenDecision } from './components/ScreenDecision';
@@ -77,12 +77,13 @@ export function App() {
         )}
 
         {currentScreen === 'decision' && (
-          <ScreenDecision
-            onProceed={() => {
-              setXp((prev) => prev + 50);
-            }}
-          />
-        )}
+  <ScreenDecision
+    xp={xp}
+    onNext={(points) => {
+      setXp((prev) => prev + points);
+    }}
+  />
+)}
       </main>
 
       {/* Resource Drawer Component */}

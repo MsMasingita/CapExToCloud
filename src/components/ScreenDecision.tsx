@@ -1,13 +1,18 @@
 // src/components/ScreenDecision.tsx
 import React, { useState } from 'react';
-import { ArrowRight, CheckCircle2, AlertTriangle, Lightbulb, Zap } from 'lucide-react';
+import { ArrowRight, CheckCircle2, AlertTriangle, Zap } from 'lucide-react';
 
 interface ScreenDecisionProps {
   onNext: (earnedXp: number) => void;
-  xp: number;
+  xp?: number;
 }
 
-export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext, xp }) => {
+interface ScreenDecisionProps {
+  onNext: (points: number) => void;
+  xp?: number;
+}
+
+export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext, xp = 50 }) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [isEvaluated, setIsEvaluated] = useState(false);
 
