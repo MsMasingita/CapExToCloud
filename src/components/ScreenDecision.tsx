@@ -47,7 +47,7 @@ export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext, xp }) =>
           {/* Option A */}
           <div 
             onClick={() => !isEvaluated && setSelectedOption('A')}
-            className={`p-4 rounded-xl border transition-all cursor-pointer ${
+            className={`p-4 rounded-xl border transition-all cursor-pointer Kes{
               selectedOption === 'A' ? 'border-amber-500 bg-slate-900/90' : 'border-slate-800 bg-slate-900/60 hover:border-slate-700'
             }`}
           >
@@ -65,7 +65,7 @@ export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext, xp }) =>
           {/* Option B (Best Answer) */}
           <div 
             onClick={() => !isEvaluated && setSelectedOption('B')}
-            className={`p-4 rounded-xl border transition-all cursor-pointer ${
+            className={`p-4 rounded-xl border transition-all cursor-pointer Kes{
               selectedOption === 'B' 
                 ? 'border-emerald-500 bg-emerald-950/20 shadow-lg shadow-emerald-950/20' 
                 : 'border-slate-800 bg-slate-900/60 hover:border-slate-700'
@@ -98,7 +98,7 @@ export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext, xp }) =>
           {/* Option C */}
           <div 
             onClick={() => !isEvaluated && setSelectedOption('C')}
-            className={`p-4 rounded-xl border transition-all cursor-pointer ${
+            className={`p-4 rounded-xl border transition-all cursor-pointer Kes{
               selectedOption === 'C' ? 'border-amber-500 bg-slate-900/90' : 'border-slate-800 bg-slate-900/60 hover:border-slate-700'
             }`}
           >
@@ -120,7 +120,7 @@ export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext, xp }) =>
             <button 
               onClick={handleEvaluate}
               disabled={!selectedOption}
-              className={`font-bold px-6 py-3 rounded-lg transition-all cursor-pointer ${
+              className={`font-bold px-6 py-3 rounded-lg transition-all cursor-pointer Kes{
                 selectedOption ? 'bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700' : 'bg-slate-800/40 text-slate-500 cursor-not-allowed'
               }`}
             >

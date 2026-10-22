@@ -1,92 +1,135 @@
 // src/components/ScreenBriefing.tsx
-import React from 'react';
-import { ArrowRight, FileText, Zap, BookOpen, Server, Cloud, Calculator } from 'lucide-react';
+import React, { useState } from 'react';
+import { Briefcase, AlertTriangle, ArrowRight, CheckCircle2, DollarSign, Server, Cloud } from 'lucide-react';
 
 interface ScreenBriefingProps {
   onProceed: () => void;
   xp: number;
 }
 
-export const ScreenBriefing: React.FC<ScreenBriefingProps> = ({ onProceed, xp }) => {
+export const ScreenBriefing: React.FC<ScreenBriefingProps> = ({ onProceed }) => {
+  const [selectedReply, setSelectedReply] = useState<number | null>(null);
+
+  const replyOptions = [
+    {
+      id: 1,
+      text: "Understood, Thandi. Buying 20 physical servers is a classic CapEx trap—we'd sink thousands into hardware that sits idle 28 days a month. We need elasticity and an OpEx cloud model like Azure.",
+      tag: "Recommended Strategy"
+    },
+    {
+      id: 2,
+      text: "Crystal clear. On-premises hardware can't handle spiky flash sales without over-provisioning. Let's scrap the physical server purchase and design an auto-scaling cloud architecture.",
+      tag: "Action-Oriented"
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-[#0F172A] text-slate-100 p-6 md:p-10 font-sans">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-center border-b border-slate-800 pb-4">
-          <h2 className="text-xl font-bold tracking-tight text-white uppercase">
-            Stage 1: The Business Without a Server Room
-          </h2>
-          <div className="flex items-center gap-2 bg-slate-800/80 px-4 py-2 rounded-full border border-slate-700">
-            <span className="text-amber-400 font-bold flex items-center gap-1.5">
-              <Zap className="w-4 h-4 fill-amber-400" /> {xp} XP
-            </span>
+    <div className="max-w-4xl mx-auto p-6 space-y-6 animate-fadeIn">
+      {/* Header Banner */}
+      <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl space-y-2">
+        <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
+          <AlertTriangle className="w-4 h-4" /> Stage 1: Operational Emergency
+        </div>
+        <h1 className="text-xl md:text-2xl font-black text-white">
+          The Business Without a Server Room
+        </h1>
+        <p className="text-sm text-slate-400">
+          Review the IT Operations Manager briefing memo below and select your strategic response.
+        </p>
+      </div>
+
+      {/* Thandi Mokoena's Briefing Memo */}
+      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
+        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center font-bold text-emerald-400">
+              TM
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-white">Thandi Mokoena</h2>
+              <p className="text-xs text-slate-400">IT Operations Manager • SoleSpace E-Commerce</p>
+            </div>
           </div>
+          <span className="text-[10px] bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded-full font-semibold border border-amber-500/30">
+            Mandatory Briefing
+          </span>
         </div>
 
-        {/* Workplace Memo Card */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden">
-          <div className="border-b border-slate-800 bg-slate-950/60 p-4 px-6 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold border border-emerald-500/40">
-                TM
+        <blockquote className="text-sm text-slate-200 leading-relaxed italic border-l-2 border-emerald-500 pl-4 py-1">
+          "Morning Intern, welcome to SoleSpace. I wish we had time for coffee, but we have an emergency. Yesterday was our exclusive Nairobi &amp; Jo'burg sneaker drop. Within 4 minutes, 15,000 concurrent shoppers flooded our custom storefront. Our on-premises servers in the office basement overheated, our backup power tripped, and customers hit 504 Gateway Timeouts. We lost thousands in sales. The founders want to budget \Kes40,000 to buy 20 more physical servers. I told them that's financial suicide—those servers will sit idle and burn electricity for 28 days every month until the next drop."
+        </blockquote>
+      </div>
+
+      {/* Interactive Intern Reply Selection */}
+      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
+        <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+          <Briefcase className="w-4 h-4" /> Select Your Professional Response to Thandi
+        </h3>
+
+        <div className="grid grid-cols-1 gap-3">
+          {replyOptions.map((option) => (
+            <div
+              key={option.id}
+              onClick={() => setSelectedReply(option.id)}
+              className={`p-4 rounded-xl border transition-all cursor-pointer flex items-start gap-3 Kes{
+                selectedReply === option.id
+                  ? 'bg-emerald-500/10 border-emerald-500 text-white shadow-lg shadow-emerald-500/5'
+                  : 'bg-slate-950/60 border-slate-800 text-slate-300 hover:border-slate-700'
+              }`}
+            >
+              <div className="mt-0.5">
+                {selectedReply === option.id ? (
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                ) : (
+                  <div className="w-5 h-5 rounded-full border border-slate-700" />
+                )}
               </div>
-              <div>
-                <p className="text-sm font-bold text-white">Thandi Mokoena, IT Operations Manager</p>
-                <p className="text-xs text-slate-400">SUBJECT: Basement Server Room Outage & Flash Sneaker Drops</p>
+              <div className="space-y-1 flex-1">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs font-semibold text-amber-400">{option.tag}</span>
+                </div>
+                <p className="text-xs md:text-sm">{option.text}</p>
               </div>
             </div>
-            <span className="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/30 px-3 py-1 rounded-full font-medium">
-              Mandatory Briefing
-            </span>
-          </div>
-          
-          <div className="p-6 space-y-4 text-sm text-slate-300 leading-relaxed">
-            <p>
-              Morning Intern, our last limited-edition sneaker drop had buyers flooding us from Nairobi to Cape Town. Within 4 minutes, our <span className="text-emerald-400 font-medium underline decoration-dotted">on-premises servers</span> in the office basement overheated, our local power backup tripped, and 12,000 shoppers hit a 504 Gateway Error.
-            </p>
-            <p>
-              We have no <span className="text-emerald-400 font-medium underline decoration-dotted">budget</span> to buy another 20 physical machines, wire high-voltage cooling, and hire an on-site security guard just for a flash sale that lasts 2 hours. We need a <span className="text-emerald-400 font-medium underline decoration-dotted">flexible computing strategy</span>.
-            </p>
-            <p className="text-slate-400 font-medium pt-2">
-              Review these 3 key concepts before you propose a solution.
-            </p>
-          </div>
+          ))}
         </div>
+      </div>
 
-        {/* Interactive Concept Strip */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-slate-900 border border-slate-800 hover:border-emerald-500/50 rounded-xl p-5 transition-all cursor-pointer space-y-2">
-            <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase">
-              <Server className="w-4 h-4" /> Flip: On-Premises
-            </div>
-            <p className="text-xs text-slate-400">Physical servers in your facility. 100% responsible for power, cooling, and security.</p>
-          </div>
-
-          <div className="bg-slate-900 border border-slate-800 hover:border-emerald-500/50 rounded-xl p-5 transition-all cursor-pointer space-y-2">
-            <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase">
-              <Cloud className="w-4 h-4" /> Flip: Cloud Computing
-            </div>
-            <p className="text-xs text-slate-400">Renting servers and storage over the internet from a provider like Azure on consumption model.</p>
-          </div>
-
-          <div className="bg-slate-900 border border-slate-800 hover:border-emerald-500/50 rounded-xl p-5 transition-all cursor-pointer space-y-2">
-            <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase">
-              <Calculator className="w-4 h-4" /> Flip: CapEx vs. OpEx
-            </div>
-            <p className="text-xs text-slate-400">CapEx = upfront physical hardware purchase. OpEx = recurring cost for exact usage.</p>
-          </div>
+      {/* Core Concept Flip Strip Preview */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-2">
+          <Server className="w-5 h-5 text-amber-400" />
+          <h4 className="text-xs font-bold text-white uppercase">On-Premises Trap</h4>
+          <p className="text-xs text-slate-400">100% hardware responsibility, physical cooling overhead, and rigid scaling limits.</p>
         </div>
-
-        {/* Proceed Button */}
-        <div className="flex justify-end pt-4">
-          <button 
-            onClick={onProceed}
-            className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-6 py-3 rounded-lg flex items-center gap-2 transition-all shadow-lg shadow-amber-500/20 cursor-pointer"
-          >
-            Proceed to Decision Analysis (+25 XP) <ArrowRight className="w-4 h-4" />
-          </button>
+        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-2">
+          <Cloud className="w-5 h-5 text-emerald-400" />
+          <h4 className="text-xs font-bold text-white uppercase">Cloud Elasticity</h4>
+          <p className="text-xs text-slate-400">Auto-scaling instances instantly when 15,000 shoppers arrive, minimizing waste.</p>
         </div>
+        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-2">
+          <DollarSign className="w-5 h-5 text-amber-400" />
+          <h4 className="text-xs font-bold text-white uppercase">CapEx vs OpEx</h4>
+          <p className="text-xs text-slate-400">Swapping heavy upfront iron purchases for a flexible, consumption-based operational budget.</p>
+        </div>
+      </div>
+
+      {/* Proceed Button */}
+      <div className="flex justify-end pt-2">
+        <button
+          disabled={selectedReply === null}
+          onClick={onProceed}
+          className={`px-6 py-3 rounded-xl font-bold text-xs md:text-sm flex items-center gap-2 transition-all cursor-pointer Kes{
+            selectedReply !== null
+              ? 'bg-emerald-500 hover:bg-emerald-600 text-slate-950 shadow-lg shadow-emerald-500/20'
+              : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'
+          }`}
+        >
+          Proceed to Decision Analysis (+25 XP) <ArrowRight className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );
 };
+
+export default ScreenBriefing;
