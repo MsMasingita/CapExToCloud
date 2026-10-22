@@ -14,7 +14,7 @@ export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext }) => {
   const handleSubmit = () => {
     if (selectedChoice === 'recommended') {
       setHasSubmitted(true);
-      onNext(50); // Award XP for correct decision
+      onNext(50);
     } else {
       setHasSubmitted(true);
     }
@@ -60,7 +60,7 @@ export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext }) => {
         </blockquote>
       </div>
 
-      {/* 2. Fundamental Concept Cards (Placed directly beneath the briefing memo per Louisa's feedback) */}
+      {/* 2. Fundamental Concept Cards */}
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">
           <BookOpen className="w-4 h-4" /> Required Reading: AZ-900 Core Cloud Concepts Before Deciding
@@ -114,7 +114,7 @@ export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext }) => {
         </div>
       </div>
 
-      {/* 3. Strategic Decision Response Options (With clear pedagogical contrast) */}
+      {/* 3. Strategic Decision Response Options */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6 shadow-xl">
         <h3 className="text-lg font-bold text-white flex items-center gap-2">
           <span>Select Your Professional Response to Thandi</span>
@@ -176,7 +176,7 @@ export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext }) => {
 
         </div>
 
-        {/* Action / Submit Button & Next Phase Trigger */}
+        {/* Action / Submit Button */}
         <div className="pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-4">
           <div className="text-xs text-slate-400">
             {hasSubmitted ? (

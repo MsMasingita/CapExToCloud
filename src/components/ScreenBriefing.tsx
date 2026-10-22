@@ -56,7 +56,7 @@ export const ScreenBriefing: React.FC<ScreenBriefingProps> = ({ onProceed }) => 
         </div>
 
         <blockquote className="text-sm text-slate-200 leading-relaxed italic border-l-2 border-emerald-500 pl-4 py-1">
-          "Morning Intern, welcome to SoleSpace. I wish we had time for coffee, but we have an emergency. Yesterday was our exclusive Nairobi &amp; Jo'burg sneaker drop. Within 4 minutes, 15,000 concurrent shoppers flooded our custom storefront. Our on-premises servers in the office basement overheated, our backup power tripped, and customers hit 504 Gateway Timeouts. We lost thousands in sales. The founders want to budget \Kes40,000 to buy 20 more physical servers. I told them that's financial suicide—those servers will sit idle and burn electricity for 28 days every month until the next drop."
+          &ldquo;Morning Intern, welcome to SoleSpace. I wish we had time for coffee, but we have an emergency. Yesterday was our exclusive Nairobi &amp; Jo&apos;burg sneaker drop. Within 4 minutes, 15,000 concurrent shoppers flooded our custom storefront. Our on-premises servers in the office basement overheated, our backup power tripped, and customers hit 504 Gateway Timeouts. We lost thousands in sales. The founders want to budget KES 40,000 to buy 20 more physical servers. I told them that&apos;s financial suicide—those servers will sit idle and burn electricity for 28 days every month until the next drop.&rdquo;
         </blockquote>
       </div>
 
@@ -71,7 +71,7 @@ export const ScreenBriefing: React.FC<ScreenBriefingProps> = ({ onProceed }) => 
             <div
               key={option.id}
               onClick={() => setSelectedReply(option.id)}
-              className={`p-4 rounded-xl border transition-all cursor-pointer flex items-start gap-3 Kes{
+              className={`p-4 rounded-xl border transition-all cursor-pointer flex items-start gap-3 ${
                 selectedReply === option.id
                   ? 'bg-emerald-500/10 border-emerald-500 text-white shadow-lg shadow-emerald-500/5'
                   : 'bg-slate-950/60 border-slate-800 text-slate-300 hover:border-slate-700'
@@ -119,7 +119,7 @@ export const ScreenBriefing: React.FC<ScreenBriefingProps> = ({ onProceed }) => 
         <button
           disabled={selectedReply === null}
           onClick={onProceed}
-          className={`px-6 py-3 rounded-xl font-bold text-xs md:text-sm flex items-center gap-2 transition-all cursor-pointer Kes{
+          className={`px-6 py-3 rounded-xl font-bold text-xs md:text-sm flex items-center gap-2 transition-all cursor-pointer ${
             selectedReply !== null
               ? 'bg-emerald-500 hover:bg-emerald-600 text-slate-950 shadow-lg shadow-emerald-500/20'
               : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/50'

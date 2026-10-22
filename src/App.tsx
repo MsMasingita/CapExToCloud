@@ -7,7 +7,7 @@ import ResourceDrawer from './ResourceDrawer';
 import { Zap, BookOpen } from 'lucide-react';
 
 export function App() {
-  const [currentScreen, setCurrentScreen] = useState<'onboarding' | 'briefing' | 'decision'>('onboarding');
+  const [currentScreen, setCurrentScreen] = useState<'onboarding' | 'briefing' | 'decision' | 'proposal'>('onboarding');
   const [xp, setXp] = useState(50);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -82,6 +82,8 @@ export function App() {
       </header>
 
       {/* Main Content Area */}
+      {/* Main Content Area */}
+      {/* Main Content Area */}
       <main className="flex-1 flex flex-col">
         {currentScreen === 'onboarding' && (
           <ScreenOnboarding
@@ -104,8 +106,22 @@ export function App() {
             xp={xp}
             onNext={(points) => {
               setXp((prev) => prev + points);
+              setCurrentScreen('proposal');
             }}
           />
+        )}
+
+        {currentScreen === 'proposal' && (
+          <div className="max-w-4xl mx-auto px-6 py-20 text-center space-y-4">
+            <h2 className="text-3xl font-bold text-white">Solution Prep &amp; Proposal Workspace</h2>
+            <p className="text-slate-400">Louisa&apos;s proposal workspace and board defense modules begin here.</p>
+            <button
+              onClick={() => setCurrentScreen('onboarding')}
+              className="px-6 py-3 bg-emerald-500 text-slate-950 font-bold rounded-xl cursor-pointer"
+            >
+              Return to Landing Page
+            </button>
+          </div>
         )}
       </main>
 
