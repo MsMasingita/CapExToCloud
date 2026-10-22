@@ -27,13 +27,13 @@ export const ScreenBriefing: React.FC<ScreenBriefingProps> = ({ onProceed }) => 
       id: 'capex-opex',
       title: 'Flip: CapEx vs. OpEx',
       concept: 'CapEx is upfront hardware spending; OpEx is ongoing operational consumption.',
-      application: 'Avoiding KES 40,000 server purchases by paying only for active drop compute.'
+      application: 'Avoiding $40,000 server purchases by paying only for active drop compute.'
     }
   ];
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 md:py-12 space-y-8 animate-fadeIn">
-      {/* Header Banner */}
+      {/* Stage Banner */}
       <div className="space-y-1">
         <div className="text-amber-400 text-xs font-bold uppercase tracking-wider">
           STAGE 1: THE BUSINESS WITHOUT A SERVER ROOM
@@ -52,7 +52,7 @@ export const ScreenBriefing: React.FC<ScreenBriefingProps> = ({ onProceed }) => 
                 Thandi Mokoena, <span className="text-slate-400 font-normal">IT Operations Manager</span>
               </h2>
               <p className="text-xs text-slate-400 font-semibold uppercase">
-                SUBJECT: Basement Server Room Outage &amp; Flash Sneaker Drops
+                SUBJECT: BASEMENT SERVER ROOM OUTAGE &amp; FLASH SNEAKER DROPS
               </p>
             </div>
           </div>
@@ -61,24 +61,24 @@ export const ScreenBriefing: React.FC<ScreenBriefingProps> = ({ onProceed }) => 
           </span>
         </div>
 
-        <div className="text-slate-300 text-sm md:text-base leading-relaxed space-y-3">
-          <p>Morning Intern,</p>
+        {/* Thandi's Exact Scenario Text */}
+        <div className="text-slate-300 text-sm md:text-base leading-relaxed space-y-3 font-normal">
           <p>
-            Our last limited-edition sneaker drop had buyers flooding us from Nairobi to Cape Town. Within 4 minutes, our <span className="text-emerald-400 font-semibold underline">on-premises servers</span> in the office basement overheated, our local power backup tripped, and 12,000 shoppers hit a 504 Gateway Error.
+            &ldquo;Morning Intern, welcome to SoleSpace. I wish we had time for coffee, but we have an emergency. Yesterday was our exclusive Nairobi &amp; Jo&apos;burg sneaker drop. Within 4 minutes, 15,000 concurrent shoppers flooded our custom storefront. Our <span className="text-emerald-400 font-semibold underline">on-premises servers</span> in the office basement overheated, our local power backup tripped, and customers hit 504 Gateway Timeouts. We lost thousands in sales.&rdquo;
           </p>
           <p>
-            We have no <span className="text-emerald-400 font-semibold underline">budget</span> to buy another 20 physical machines, wire high-voltage cooling, and hire an on-site security guard just for a flash sale that lasts 2 hours. We need a <span className="text-emerald-400 font-semibold underline">flexible computing</span> strategy.
+            &ldquo;The founders want to <span className="text-emerald-400 font-semibold underline">budget $40,000</span> to buy 20 more physical servers. I told them that&apos;s financial suicide—those servers will sit idle and burn electricity for 28 days every month until the next drop.&rdquo;
           </p>
-          <p className="text-slate-400 font-medium pt-2">
+          <p className="text-slate-400 font-medium pt-2 text-xs md:text-sm">
             Review these 3 key concepts before you propose a solution.
           </p>
         </div>
       </div>
 
-      {/* Interactive Concept Strip (Directly beneath memo as requested by Louisa) */}
+      {/* Interactive Concept Strip */}
       <div className="space-y-3">
         <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-          Interactive concept strip
+          INTERACTIVE CONCEPT STRIP
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -112,7 +112,7 @@ export const ScreenBriefing: React.FC<ScreenBriefingProps> = ({ onProceed }) => 
         </div>
       </div>
 
-      {/* Orange Proceed Button (Matching Wireframe Image 2 Exactly) */}
+      {/* Orange Proceed Button */}
       <div className="flex justify-end pt-4">
         <button
           onClick={onProceed}
