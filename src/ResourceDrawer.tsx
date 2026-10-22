@@ -1,96 +1,131 @@
 // src/ResourceDrawer.tsx
-import { useState } from 'react';
-import { FolderKanban, Video, BookOpen, ExternalLink, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, BookOpen, Layers, ShieldCheck, CheckCircle2 } from 'lucide-react';
 
-export default function ResourceDrawer() {
-  const [isOpen, setIsOpen] = useState(false);
+interface ResourceDrawerProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const ResourceDrawer: React.FC<ResourceDrawerProps> = ({ isOpen, onClose }) => {
+  const [activeTab, setActiveTab] = useState<'domain1' | 'domain2' | 'domain3'>('domain1');
+
+  if (!isOpen) return null;
 
   return (
-    <>
-      {/* Floating Trigger Button fixed at top right of the viewport */}
-      <div className="fixed top-3 right-6 z-40">
-        <button
-          onClick={() => setIsOpen(true)}
-          className="bg-slate-800 text-slate-200 border border-slate-700 hover:bg-slate-700 px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 shadow-lg cursor-pointer transition-all"
-        >
-          <FolderKanban className="w-4 h-4 text-emerald-400" /> My Files & Tutorials
-        </button>
-      </div>
-
-      {/* Slide-Over Drawer Modal */}
-      {isOpen && (
-        <div className="fixed inset-0 z-[999] flex justify-end bg-slate-950/80 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-slate-900 border-l border-slate-800 h-full p-6 text-slate-100 flex flex-col justify-between shadow-2xl overflow-y-auto">
-            <div className="space-y-6">
-              {/* Drawer Header */}
-              <div className="flex justify-between items-center border-b border-slate-800 pb-4">
-                <div>
-                  <h2 className="text-base font-bold text-white flex items-center gap-2">
-                    <FolderKanban className="w-4 h-4 text-emerald-400" /> My Files & Tutorials
-                  </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">Free external study resources & quick links</p>
-                </div>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition-all cursor-pointer"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Recommended Video Tutorials */}
-              <div className="space-y-3">
-                <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-                  <Video className="w-3.5 h-3.5" /> Recommended Video Tutorials
-                </h3>
-
-                <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-2">
-                  <div className="flex justify-between items-start">
-                    <span className="text-sm font-semibold text-white">AZ-900 Azure Fundamentals Full Course</span>
-                    <span className="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-medium">2.5 Hrs</span>
-                  </div>
-                  <p className="text-xs text-slate-400">Complete, beginner-friendly crash course video tutorial.</p>
-                  <a
-                    href="https://youtube.com"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="block text-center bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold py-2 rounded-lg transition-all mt-2 cursor-pointer"
-                  >
-                    Watch on YouTube <ExternalLink className="w-3 h-3 inline ml-1" />
-                  </a>
-                </div>
-              </div>
-
-              {/* Official Study Links */}
-              <div className="space-y-3">
-                <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-                  <BookOpen className="w-3.5 h-3.5" /> Official Study Links
-                </h3>
-
-                <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-2">
-                  <div className="flex justify-between items-start">
-                    <span className="text-sm font-semibold text-white">Official Microsoft AZ-900 Study Guide</span>
-                    <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-medium">Microsoft</span>
-                  </div>
-                  <p className="text-xs text-slate-400">Check exactly what is on the exam from Microsoft Learn.</p>
-                  <a
-                    href="https://learn.microsoft.com"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="block text-center border border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/10 text-xs font-bold py-2 rounded-lg transition-all mt-2 cursor-pointer"
-                  >
-                    Open Study Guide <ExternalLink className="w-3 h-3 inline ml-1" />
-                  </a>
-                </div>
-              </div>
+    <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
+      <div className="w-full max-w-xl bg-slate-900 border-l border-slate-800 h-full flex flex-col shadow-2xl">
+        
+        {/* Drawer Header */}
+        <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-950/40">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <BookOpen className="w-5 h-5" />
             </div>
-
-            <div className="border-t border-slate-800 pt-4 text-center">
-              <p className="text-[11px] text-slate-500">CloudClarity AI Workspace Storage Active</p>
+            <div>
+              <h2 className="text-lg font-bold text-white">AZ-900 Certification Syllabus</h2>
+              <p className="text-xs text-slate-400">Complete Study Companion &amp; Reference Notes</p>
             </div>
           </div>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
-      )}
-    </>
+
+        {/* Domain Navigation Tabs */}
+        <div className="flex border-b border-slate-800 bg-slate-950/60 p-2 gap-2">
+          <button
+            onClick={() => setActiveTab('domain1')}
+            className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
+              activeTab === 'domain1'
+                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            Domain 1: Cloud Concepts
+          </button>
+          <button
+            onClick={() => setActiveTab('domain2')}
+            className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
+              activeTab === 'domain2'
+                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            Domain 2: Architecture
+          </button>
+          <button
+            onClick={() => setActiveTab('domain3')}
+            className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
+              activeTab === 'domain3'
+                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            Domain 3: Governance
+          </button>
+        </div>
+
+        {/* Drawer Content Body */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          
+          {activeTab === 'domain1' && (
+            <div className="space-y-4">
+              <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 space-y-2">
+                <h3 className="text-sm font-bold text-emerald-400">CapEx vs. OpEx Financial Models</h3>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  <strong>Capital Expenditure (CapEx):</strong> High upfront costs for physical servers, infrastructure, and real estate. Value depreciates over time.
+                </p>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  <strong>Operational Expenditure (OpEx):</strong> Pay-as-you-go subscription model with zero upfront costs. Expenses match live traffic dynamically.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 space-y-2">
+                <h3 className="text-sm font-bold text-amber-400">High Availability &amp; Elasticity</h3>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  <strong>Elasticity:</strong> The ability to automatically scale up hardware resources during spikes (like flash sales in Nairobi) and scale down when traffic normalizes.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'domain2' && (
+            <div className="space-y-4">
+              <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 space-y-2">
+                <h3 className="text-sm font-bold text-emerald-400">Azure Architecture Components</h3>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  <strong>Regions &amp; Availability Zones:</strong> Azure Regions (e.g., South Africa North) contain multiple isolated data centers ensuring fault tolerance.
+                </p>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  <strong>Virtual Machines &amp; App Services:</strong> IaaS vs PaaS hosting tradeoffs for backend e-commerce workloads.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'domain3' && (
+            <div className="space-y-4">
+              <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 space-y-2">
+                <h3 className="text-sm font-bold text-emerald-400">Azure Management &amp; Cost Tools</h3>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  <strong>Cost Management &amp; Budgets:</strong> Setting spending caps and alerts in KSh/USD to prevent operational cost runaways.
+                </p>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  <strong>Azure Policy &amp; RBAC:</strong> Governance frameworks enforcing data residency laws across African jurisdictions.
+                </p>
+              </div>
+            </div>
+          )}
+
+        </div>
+
+      </div>
+    </div>
   );
-}
+};
+
+export default ResourceDrawer;

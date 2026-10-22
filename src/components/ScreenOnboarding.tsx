@@ -1,115 +1,179 @@
 // src/components/ScreenOnboarding.tsx
 import React from 'react';
-import { Zap, ArrowRight, Lock, Building2, ShieldCheck, Stethoscope } from 'lucide-react';
+import { ArrowRight, Lock, Building2, UserCheck, Zap, Server, ShieldCheck, Database } from 'lucide-react';
 
 interface ScreenOnboardingProps {
-  onAcceptAssignment: () => void;
-  xp: number;
+  onAcceptTrack: () => void;
+  internName?: string;
+  internRole?: string;
 }
 
-export const ScreenOnboarding: React.FC<ScreenOnboardingProps> = ({ onAcceptAssignment, xp }) => {
+export const ScreenOnboarding: React.FC<ScreenOnboardingProps> = ({
+  onAcceptTrack,
+  internName = "Eric Kwendo",
+  internRole = "Junior Cloud Intern"
+}) => {
   return (
-    <div className="min-h-screen bg-[#0F172A] text-slate-100 p-6 md:p-10 font-sans">
-      {/* Top Bar */}
-      <header className="max-w-6xl mx-auto flex justify-between items-center mb-10 border-b border-slate-800 pb-4">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-amber-400 bg-clip-text text-transparent flex items-center gap-2">
-            <Zap className="w-6 h-6 text-amber-400" /> CloudClarity AI
-          </span>
-          <span className="hidden sm:inline-block text-xs text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-3 py-1 rounded-full">
-            Unofficial AZ-900 Companion | #1MillionDevs
-          </span>
+    <div className="w-full max-w-7xl mx-auto px-4 py-8 md:py-12 space-y-10 animate-fadeIn">
+      {/* Page Header */}
+      <div className="space-y-3">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
+          <Zap className="w-3.5 h-3.5" /> Interactive Onboarding
         </div>
-        <div className="flex items-center gap-2 bg-slate-800/80 px-4 py-2 rounded-full border border-slate-700">
-          <span className="text-amber-400 font-bold flex items-center gap-1.5">
-            <Zap className="w-4 h-4 fill-amber-400" /> {xp} XP
-          </span>
-        </div>
-      </header>
+        <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
+          YOUR FIRST 30 DAYS AS AN INTERN
+        </h1>
+        <p className="text-base md:text-lg text-slate-400 max-w-2xl font-normal">
+          Select your active enterprise deployment track to begin solving real-world cloud infrastructure challenges across official AZ-900 domains.
+        </p>
+      </div>
 
-      <main className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Intern ID Badge Card */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-6 shadow-xl md:col-span-1 flex flex-col justify-between">
-          <div>
-            <div className="border-b border-slate-800 pb-3 mb-4 flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <p className="text-xs font-bold text-emerald-400 tracking-wider uppercase">
-                Intern ID Badge
-              </p>
-            </div>
-            
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-14 h-14 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-xl border border-emerald-500/40">
-                EK
-              </div>
-              <div>
-                <h3 className="font-bold text-white text-lg">Eric Kwendo</h3>
-                <p className="text-xs text-slate-400">Junior Cloud Intern</p>
-              </div>
-            </div>
+      {/* Main Grid: Intern ID & Track Selection */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        {/* Left Column: Intern ID Badge */}
+        <div className="lg:col-span-4 bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6 shadow-2xl backdrop-blur-sm relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
+          
+          <div className="flex items-center justify-between border-b border-slate-800/80 pb-4">
+            <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-2">
+              <UserCheck className="w-4 h-4" /> Intern ID Badge
+            </span>
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          </div>
 
-            <div className="text-xs space-y-2.5 bg-slate-950/60 p-4 rounded-lg border border-slate-800/80">
-              <div className="flex justify-between"><span className="text-slate-400">Role:</span> <span className="text-slate-200 font-medium">Cloud Architecture Trainee</span></div>
-              <div className="flex justify-between"><span className="text-slate-400">Manager:</span> <span className="text-slate-200 font-medium">Thandi Mokoena (IT Ops)</span></div>
-              <div className="flex justify-between"><span className="text-slate-400">Status:</span> <span className="text-emerald-400 font-semibold">Active Intern #4812</span></div>
-              <div className="flex justify-between"><span className="text-slate-400">Hubs:</span> <span className="text-slate-200 font-medium">Gauteng • Nairobi • Lagos</span></div>
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center font-black text-slate-950 text-2xl shadow-lg shadow-emerald-500/20 ring-2 ring-emerald-400/20">
+              EK
+            </div>
+            <div className="space-y-1">
+              <h2 className="text-xl font-bold text-white leading-tight">{internName}</h2>
+              <p className="text-sm text-slate-400 font-medium">{internRole}</p>
+            </div>
+          </div>
+
+          <div className="space-y-3 pt-2 text-sm border-t border-slate-800/80">
+            <div className="flex justify-between items-center py-1">
+              <span className="text-slate-400">Assigned Role</span>
+              <span className="text-white font-semibold">Cloud Architecture Trainee</span>
+            </div>
+            <div className="flex justify-between items-center py-1">
+              <span className="text-slate-400">Reporting Manager</span>
+              <span className="text-emerald-400 font-semibold">Thandi Mokoena (IT Ops)</span>
+            </div>
+            <div className="flex justify-between items-center py-1">
+              <span className="text-slate-400">Internship Status</span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold border border-emerald-500/30">
+                Active Intern #4812
+              </span>
+            </div>
+            <div className="flex justify-between items-center py-1">
+              <span className="text-slate-400">Operational Hubs</span>
+              <span className="text-slate-300 font-medium text-xs">Nairobi • Lagos • Johannesburg</span>
             </div>
           </div>
         </div>
 
-        {/* Track Selection Grid */}
-        <div className="md:col-span-2 space-y-6">
-          <div>
-            <h1 className="text-2xl font-extrabold text-white tracking-tight uppercase">
-              Your First 30 Days as an Intern
-            </h1>
-            <p className="text-sm text-slate-400 mt-1">
-              Select your active deployment track to begin solving enterprise infrastructure challenges.
-            </p>
-          </div>
-
-          {/* Active Track: SoleSpace E-Commerce */}
-          <div className="bg-slate-900 border-2 border-emerald-500/60 rounded-xl p-6 shadow-lg shadow-emerald-950/20 space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-emerald-400" /> SoleSpace E-Commerce
-              </h2>
-              <span className="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-2.5 py-1 rounded-full font-semibold">
+        {/* Right Column: 3-Company Track Selector */}
+        <div className="lg:col-span-8 space-y-6">
+          
+          {/* TRACK 1: SoleSpace E-Commerce (ACTIVE) */}
+          <div className="bg-slate-900/90 border-2 border-emerald-500/50 hover:border-emerald-500/80 rounded-2xl p-6 md:p-8 space-y-6 shadow-2xl transition-all relative overflow-hidden group">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <Building2 className="w-6 h-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-white group-hover:text-emerald-400 transition-colors">
+                    SoleSpace E-Commerce
+                  </h2>
+                  <p className="text-xs text-slate-400">Retail &amp; High-Scale Infrastructure Track</p>
+                </div>
+              </div>
+              <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/30 uppercase tracking-wider">
                 Active Track
               </span>
             </div>
-            
-            <p className="text-sm text-slate-300 leading-relaxed">
-              Sneaker drops across Kenya, Nigeria & South Africa are crashing basement servers. Help them scale before the next drop!
+
+            <p className="text-sm md:text-base text-slate-300 leading-relaxed">
+              Sneaker drops across Kenya, Nigeria &amp; South Africa are crashing basement servers during peak traffic spikes. Help the engineering team scale before the next drop!
             </p>
 
-            <div className="flex justify-between items-center pt-2">
-              <span className="text-xs text-amber-400 font-semibold">
-                Chapter 1: Cloud Concepts (25-30% Exam Weight)
-              </span>
-              <button 
-                onClick={onAcceptAssignment}
-                className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-5 py-2.5 rounded-lg flex items-center gap-2 transition-all shadow-lg shadow-amber-500/20 cursor-pointer"
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-800/80">
+              <div className="flex items-center gap-2 text-xs font-bold text-amber-400 bg-amber-500/10 px-3 py-1.5 rounded-lg border border-amber-500/20">
+                <Server className="w-4 h-4" />
+                Domain 1: Cloud Concepts (25–30% Exam Weight)
+              </div>
+
+              <button
+                onClick={onAcceptTrack}
+                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-black text-sm md:text-base flex items-center justify-center gap-3 transition-all transform hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-amber-500/20 cursor-pointer"
               >
-                Accept Assignment <ArrowRight className="w-4 h-4" />
+                Accept SoleSpace Assignment <ArrowRight className="w-5 h-5" />
               </button>
             </div>
           </div>
 
-          {/* Locked Tracks */}
-          <div className="bg-slate-900/40 border border-slate-800/80 rounded-xl p-5 opacity-60 flex justify-between items-center">
-            <div>
-              <h3 className="text-base font-semibold text-slate-400 flex items-center gap-2">
-                <Stethoscope className="w-4 h-4 text-slate-500" /> AfriHealth Telemed
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">Rural health data residency & migration</p>
+          {/* TRACK 2: AfriHealth Telemed (LOCKED) */}
+          <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-6 opacity-75 space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-slate-800 text-slate-500 border border-slate-700/50">
+                  <Database className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-300">AfriHealth Telemed</h3>
+                  <p className="text-xs text-slate-500">Healthcare Data Residency &amp; Hybrid Cloud Migration</p>
+                </div>
+              </div>
+              <span className="px-3 py-1 rounded-full bg-slate-800 text-slate-400 text-xs font-bold border border-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                <Lock className="w-3.5 h-3.5" /> Locked • Domain 2
+              </span>
             </div>
-            <span className="text-xs text-slate-500 flex items-center gap-1 border border-slate-800 px-3 py-1 rounded-full">
-              <Lock className="w-3 h-3" /> Coming Soon
-            </span>
+
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-800/50 text-xs">
+              <span className="text-slate-400 font-medium">
+                Domain 2: Azure Architecture &amp; Services (35–40% Exam Weight)
+              </span>
+              <button disabled className="px-5 py-2 rounded-lg bg-slate-800/80 text-slate-500 text-xs font-semibold cursor-not-allowed border border-slate-700/40">
+                Unlocks After Domain 1
+              </button>
+            </div>
           </div>
+
+          {/* TRACK 3: EduBridge Academy (LOCKED) */}
+          <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-6 opacity-75 space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-slate-800 text-slate-500 border border-slate-700/50">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-300">EduBridge Academy</h3>
+                  <p className="text-xs text-slate-500">Pan-African Student Portal Security &amp; Cost Management</p>
+                </div>
+              </div>
+              <span className="px-3 py-1 rounded-full bg-slate-800 text-slate-400 text-xs font-bold border border-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                <Lock className="w-3.5 h-3.5" /> Locked • Domain 3
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-800/50 text-xs">
+              <span className="text-slate-400 font-medium">
+                Domain 3: Management &amp; Governance (30–35% Exam Weight)
+              </span>
+              <button disabled className="px-5 py-2 rounded-lg bg-slate-800/80 text-slate-500 text-xs font-semibold cursor-not-allowed border border-slate-700/40">
+                Unlocks After Domain 2
+              </button>
+            </div>
+          </div>
+
         </div>
-      </main>
+
+      </div>
     </div>
   );
 };
+
+export default ScreenOnboarding;
