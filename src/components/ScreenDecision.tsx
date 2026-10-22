@@ -1,5 +1,4 @@
 // src/components/ScreenDecision.tsx
-// src/components/ScreenDecision.tsx
 import React, { useState } from 'react';
 import { ArrowRight, CheckCircle2, AlertTriangle, Zap, BookOpen, ShieldCheck, Server } from 'lucide-react';
 
@@ -33,7 +32,7 @@ export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext }) => {
           The Business Without a Server Room
         </h2>
         <p className="text-slate-400 text-sm md:text-base">
-          Review the IT Operations Manager briefing memo and study the fundamental cloud concepts below before selecting your strategic response.
+          Review the IT Operations Manager briefing memo and select your strategic response.
         </p>
       </div>
 
@@ -61,46 +60,61 @@ export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext }) => {
         </blockquote>
       </div>
 
-      {/* 2. Fundamental Concept Cards (MOVED UP: Required Reading Before Decision) */}
+      {/* 2. Fundamental Concept Cards (Placed directly beneath the briefing memo per Louisa's feedback) */}
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">
-          <BookOpen className="w-4 h-4" /> Required Reading: AZ-900 Core Cloud Concepts
+          <BookOpen className="w-4 h-4" /> How Do You Solve This Problem? (Fundamental Cloud Concepts)
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Concept 1 */}
-          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-2">
+          {/* Concept Card 1 */}
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-3">
             <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
-              <Server className="w-4 h-4" /> Cloud Models (IaaS)
+              <Server className="w-4 h-4" /> Cloud Models (IaaS &amp; Migration)
             </div>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Moving physical servers to virtual machines (VMs) in the cloud (lift-and-shift) completely mitigates on-premises hardware cooling and physical failure risks.
-            </p>
+            <div className="space-y-2 text-xs">
+              <p className="text-slate-300 leading-relaxed">
+                <strong className="text-white">Concept:</strong> Moving physical servers to virtual machines (VMs) in the cloud is called migration (specifically lift-and-shift), which mitigates on-premises hardware risks.
+              </p>
+              <p className="text-slate-400 bg-slate-950/40 p-2.5 rounded-lg border border-slate-800/60 leading-relaxed">
+                <strong className="text-emerald-400">SoleSpace Application:</strong> Rented Azure VMs remove the need for a basement server room and prevent physical cooling failures.
+              </p>
+            </div>
           </div>
 
-          {/* Concept 2 */}
-          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-2">
+          {/* Concept Card 2 */}
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-3">
             <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
               <Zap className="w-4 h-4" /> Cloud Elasticity
             </div>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              The ability to automatically and dynamically expand or contract computing resources in real time to match sudden traffic spikes, then shrink back down to zero idle waste.
-            </p>
+            <div className="space-y-2 text-xs">
+              <p className="text-slate-300 leading-relaxed">
+                <strong className="text-white">Concept:</strong> The ability to automatically and dynamically expand or contract computing resources in real time to match sudden spikes and drops in workload.
+              </p>
+              <p className="text-slate-400 bg-slate-950/40 p-2.5 rounded-lg border border-slate-800/60 leading-relaxed">
+                <strong className="text-emerald-400">SoleSpace Application:</strong> SoleSpace&apos;s application automatically scales out to handle 15,000 flash drop shoppers, then shrinks to zero idle waste.
+              </p>
+            </div>
           </div>
 
-          {/* Concept 3 */}
-          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-2">
+          {/* Concept Card 3 */}
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-3">
             <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
               <ShieldCheck className="w-4 h-4" /> CapEx vs. OpEx
             </div>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              CapEx requires heavy upfront physical hardware spending. OpEx is a consumption-based operational model where you only pay for resources when actively used.
-            </p>
+            <div className="space-y-2 text-xs">
+              <p className="text-slate-300 leading-relaxed">
+                <strong className="text-white">Concept:</strong> Capital Expenditure (CapEx) requires upfront spending on physical hardware with depreciation. Operational Expenditure (OpEx) is a consumption-based operational model where you pay for resources used.
+              </p>
+              <p className="text-slate-400 bg-slate-950/40 p-2.5 rounded-lg border border-slate-800/60 leading-relaxed">
+                <strong className="text-emerald-400">SoleSpace Application:</strong> Shifting from buying KES 40,000 worth of idle servers to paying only for checkout compute during active drop windows.
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* 3. Strategic Decision Response Options (Placed After Concepts) */}
+      {/* 3. Strategic Decision Response Options (With clear pedagogical contrast) */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6 shadow-xl">
         <h3 className="text-lg font-bold text-white flex items-center gap-2">
           <span>Select Your Professional Response to Thandi</span>
@@ -128,7 +142,7 @@ export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext }) => {
                   </span>
                 </div>
                 <p className="text-sm text-slate-200 font-medium leading-relaxed">
-                  &ldquo;Understood, Thandi. Buying 20 physical servers is a classic CapEx trap—we&apos;d sink thousands into hardware that sits idle 28 days a month. Let&apos;s deploy an agile migration strategy to Azure (IaaS) for better risk mitigation. This stops our capital losses and allows full cloud elasticity.&rdquo;
+                  &ldquo;Understood, Thandi. Buying 20 physical servers is a classic CapEx trap—we&apos;d sink thousands into hardware that sits idle 28 days a month. Let&apos;s run an agile migration strategy to Azure (IaaS) for better risk mitigation. This stops our capital losses and allows elasticity.&rdquo;
                 </p>
               </div>
             </div>
@@ -150,11 +164,11 @@ export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext }) => {
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold px-2 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30 uppercase">
-                    Traditional On-Premises Strategy (Costly Mistake Trap)
+                    Traditional On-Premises Strategy (Incorrect Trap)
                   </span>
                 </div>
                 <p className="text-sm text-slate-400 font-medium leading-relaxed">
-                  &ldquo;Support the founders&apos; plan to budget for 20 more physical servers in the basement. It&apos;s better to have 100% control over the hardware, even if it causes massive Capital Expense (CapEx) and leaves servers idle during non-drop weeks.&rdquo;
+                  &ldquo;Support the founders&apos; plan to budget for 20 more physical servers in the basement. It&apos;s better to have 100% control over the hardware, even if it is a major Capital Expense (CapEx).&rdquo;
                 </p>
               </div>
             </div>
@@ -167,10 +181,10 @@ export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext }) => {
           <div className="text-xs text-slate-400">
             {hasSubmitted ? (
               <span className="text-emerald-400 font-semibold flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4" /> Decision registered successfully! Ready for proposal workspace.
+                <CheckCircle2 className="w-4 h-4" /> Decision registered successfully! Ready for solution prep.
               </span>
             ) : (
-              <span>Select the correct cloud-native strategy to unlock maximum XP.</span>
+              <span>Select the correct cloud-native strategy to unlock your path forward.</span>
             )}
           </div>
 
@@ -184,10 +198,10 @@ export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext }) => {
             </button>
           ) : (
             <button
-              onClick={() => onNext(100)}
+              onClick={() => onNext(50)}
               className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-black text-sm flex items-center gap-2 transition shadow-lg shadow-amber-500/20 cursor-pointer animate-bounce"
             >
-              Move to Solution Prep &amp; Board Meeting (+50 XP) <ArrowRight className="w-4 h-4" />
+              Move to Solution Prep for the Board Meeting (+25 XP) <ArrowRight className="w-4 h-4" />
             </button>
           )}
         </div>
