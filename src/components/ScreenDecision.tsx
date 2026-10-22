@@ -32,7 +32,7 @@ export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext }) => {
           The Business Without a Server Room
         </h2>
         <p className="text-slate-400 text-sm md:text-base">
-          Review the IT Operations Manager briefing memo and select your strategic response.
+          Review the IT Operations Manager briefing memo and study the fundamental cloud concepts below before selecting your strategic response.
         </p>
       </div>
 
@@ -63,7 +63,7 @@ export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext }) => {
       {/* 2. Fundamental Concept Cards (Placed directly beneath the briefing memo per Louisa's feedback) */}
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">
-          <BookOpen className="w-4 h-4" /> How Do You Solve This Problem? (Fundamental Cloud Concepts)
+          <BookOpen className="w-4 h-4" /> Required Reading: AZ-900 Core Cloud Concepts Before Deciding
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -176,7 +176,7 @@ export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext }) => {
 
         </div>
 
-        {/* Action / Submit Button */}
+        {/* Action / Submit Button & Next Phase Trigger */}
         <div className="pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-4">
           <div className="text-xs text-slate-400">
             {hasSubmitted ? (
@@ -201,7 +201,7 @@ export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext }) => {
               onClick={() => onNext(50)}
               className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-black text-sm flex items-center gap-2 transition shadow-lg shadow-amber-500/20 cursor-pointer animate-bounce"
             >
-              Move to Solution Prep for the Board Meeting (+25 XP) <ArrowRight className="w-4 h-4" />
+              Move to Solution Prep for the Board Meeting (+50 XP) <ArrowRight className="w-4 h-4" />
             </button>
           )}
         </div>
