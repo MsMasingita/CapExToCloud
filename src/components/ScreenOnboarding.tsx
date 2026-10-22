@@ -1,77 +1,114 @@
 // src/components/ScreenOnboarding.tsx
-import React from 'react';
-import { ArrowRight, Lock, Building2, UserCheck, Zap, Server, ShieldCheck, Database } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowRight, Lock, Building2, UserCheck, Zap, Server, ShieldCheck, Database, Sparkles } from 'lucide-react';
 
 interface ScreenOnboardingProps {
   onAcceptTrack: () => void;
-  internName?: string;
-  internRole?: string;
 }
 
-export const ScreenOnboarding: React.FC<ScreenOnboardingProps> = ({
-  onAcceptTrack,
-  internName = "Eric Kwendo",
-  internRole = "Junior Cloud Intern"
-}) => {
+export const ScreenOnboarding: React.FC<ScreenOnboardingProps> = ({ onAcceptTrack }) => {
+  const [nameInput, setNameInput] = useState('');
+  const [internName, setInternName] = useState('');
+  const [isGenerated, setIsGenerated] = useState(false);
+
+  const handleGenerateBadge = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!nameInput.trim()) return;
+    setInternName(nameInput.trim());
+    setIsGenerated(true);
+  };
+
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8 md:py-12 space-y-10 animate-fadeIn">
-      {/* Page Header */}
+      {/* Landing Page Hero Header */}
       <div className="space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
-          <Zap className="w-3.5 h-3.5" /> Interactive Onboarding
+          <Sparkles className="w-3.5 h-3.5" /> Official AZ-900 Interactive Onboarding Landing Page
         </div>
         <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
-          YOUR FIRST 30 DAYS AS AN INTERN
+          WELCOME TO YOUR CLOUD ARCHITECTURE INTERNSHIP
         </h1>
-        <p className="text-base md:text-lg text-slate-400 max-w-2xl font-normal">
-          Select your active enterprise deployment track to begin solving real-world cloud infrastructure challenges across official AZ-900 domains.
+        <p className="text-base md:text-lg text-slate-400 max-w-3xl font-normal leading-relaxed">
+          Enter your name below to generate your official Intern ID badge, then select your active enterprise deployment track to start solving real-world cloud infrastructure challenges across official AZ-900 domains.
         </p>
       </div>
 
       {/* Main Grid: Intern ID & Track Selection */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* Left Column: Intern ID Badge */}
+        {/* Left Column: Interactive Intern ID Badge Creator / Card */}
         <div className="lg:col-span-4 bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6 shadow-2xl backdrop-blur-sm relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
           
           <div className="flex items-center justify-between border-b border-slate-800/80 pb-4">
             <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-2">
-              <UserCheck className="w-4 h-4" /> Intern ID Badge
+              <UserCheck className="w-4 h-4" /> Intern ID Badge Portal
             </span>
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center font-black text-slate-950 text-2xl shadow-lg shadow-emerald-500/20 ring-2 ring-emerald-400/20">
-              EK
-            </div>
-            <div className="space-y-1">
-              <h2 className="text-xl font-bold text-white leading-tight">{internName}</h2>
-              <p className="text-sm text-slate-400 font-medium">{internRole}</p>
-            </div>
-          </div>
+          {!isGenerated ? (
+            /* Blank / Input State before user enters name */
+            <form onSubmit={handleGenerateBadge} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+                  Enter Your Full Name
+                </label>
+                <input
+                  type="text"
+                  value={nameInput}
+                  onChange={(e) => setNameInput(e.target.value)}
+                  placeholder="Type your name..."
+                  className="w-full px-4 py-3 bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition text-sm font-medium"
+                  required
+                />
+              </div>
 
-          <div className="space-y-3 pt-2 text-sm border-t border-slate-800/80">
-            <div className="flex justify-between items-center py-1">
-              <span className="text-slate-400">Assigned Role</span>
-              <span className="text-white font-semibold">Cloud Architecture Trainee</span>
+              <button
+                type="submit"
+                className="w-full py-3 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 cursor-pointer"
+              >
+                Generate Intern ID Badge (+15 XP) <Zap className="w-4 h-4 fill-slate-950" />
+              </button>
+              <p className="text-xs text-slate-500 text-center">
+                Enter your name to initialize your official desk credentials.
+              </p>
+            </form>
+          ) : (
+            /* Generated ID Badge State */
+            <div className="space-y-6 animate-fadeIn">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center font-black text-slate-950 text-2xl shadow-lg shadow-emerald-500/20 ring-2 ring-emerald-400/20">
+                  {internName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                </div>
+                <div className="space-y-1">
+                  <h2 className="text-xl font-bold text-white leading-tight">{internName}</h2>
+                  <p className="text-sm text-emerald-400 font-medium">Junior Cloud Intern</p>
+                </div>
+              </div>
+
+              <div className="space-y-3 pt-2 text-sm border-t border-slate-800/80">
+                <div className="flex justify-between items-center py-1">
+                  <span className="text-slate-400">Assigned Role</span>
+                  <span className="text-white font-semibold">Cloud Architecture Trainee</span>
+                </div>
+                <div className="flex justify-between items-center py-1">
+                  <span className="text-slate-400">Reporting Manager</span>
+                  <span className="text-emerald-400 font-semibold">Thandi Mokoena (IT Ops)</span>
+                </div>
+                <div className="flex justify-between items-center py-1">
+                  <span className="text-slate-400">Internship Status</span>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold border border-emerald-500/30">
+                    Active Intern #4812
+                  </span>
+                </div>
+                <div className="flex justify-between items-center py-1">
+                  <span className="text-slate-400">Operational Hubs</span>
+                  <span className="text-slate-300 font-medium text-xs">Nairobi • Lagos • Johannesburg</span>
+                </div>
+              </div>
             </div>
-            <div className="flex justify-between items-center py-1">
-              <span className="text-slate-400">Reporting Manager</span>
-              <span className="text-emerald-400 font-semibold">Thandi Mokoena (IT Ops)</span>
-            </div>
-            <div className="flex justify-between items-center py-1">
-              <span className="text-slate-400">Internship Status</span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold border border-emerald-500/30">
-                Active Intern #4812
-              </span>
-            </div>
-            <div className="flex justify-between items-center py-1">
-              <span className="text-slate-400">Operational Hubs</span>
-              <span className="text-slate-300 font-medium text-xs">Nairobi • Lagos • Johannesburg</span>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Right Column: 3-Company Track Selector */}

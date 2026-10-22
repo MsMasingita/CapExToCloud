@@ -1,150 +1,201 @@
 // src/components/ScreenDecision.tsx
+// src/components/ScreenDecision.tsx
 import React, { useState } from 'react';
-import { ArrowRight, CheckCircle2, AlertTriangle, Zap } from 'lucide-react';
-
-interface ScreenDecisionProps {
-  onNext: (earnedXp: number) => void;
-  xp?: number;
-}
+import { ArrowRight, CheckCircle2, AlertTriangle, Zap, BookOpen, ShieldCheck, Server } from 'lucide-react';
 
 interface ScreenDecisionProps {
   onNext: (points: number) => void;
   xp?: number;
 }
 
-export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext, xp = 50 }) => {
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [isEvaluated, setIsEvaluated] = useState(false);
+export const ScreenDecision: React.FC<ScreenDecisionProps> = ({ onNext }) => {
+  const [selectedChoice, setSelectedChoice] = useState<'recommended' | 'traditional' | null>('recommended');
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
-  const handleEvaluate = () => {
-    if (selectedOption === 'B') {
-      setIsEvaluated(true);
+  const handleSubmit = () => {
+    if (selectedChoice === 'recommended') {
+      setHasSubmitted(true);
+      onNext(50); // Award XP for correct decision
     } else {
-      setIsEvaluated(true);
+      setHasSubmitted(true);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#0F172A] text-slate-100 p-6 md:p-10 font-sans">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-center border-b border-slate-800 pb-4">
-          <h2 className="text-xl font-bold tracking-tight text-white uppercase">
-            Architectural Decision 1.1: How Should SoleSpace Scale?
-          </h2>
-          <div className="flex items-center gap-2 bg-slate-800/80 px-4 py-2 rounded-full border border-slate-700">
-            <span className="text-amber-400 font-bold flex items-center gap-1.5">
-              <Zap className="w-4 h-4 fill-amber-400" /> {xp} XP
-            </span>
-          </div>
+    <div className="w-full max-w-5xl mx-auto px-4 py-8 md:py-12 space-y-8 animate-fadeIn">
+      
+      {/* Stage Header */}
+      <div className="space-y-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold uppercase tracking-wider">
+          <AlertTriangle className="w-3.5 h-3.5" /> Stage 1: Operational Emergency
         </div>
+        <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight">
+          The Business Without a Server Room
+        </h2>
+        <p className="text-slate-400 text-sm md:text-base">
+          Review the IT Operations Manager briefing memo and study the fundamental cloud concepts below before selecting your strategic response.
+        </p>
+      </div>
 
-        {/* Problem Statement Card */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl space-y-2">
-          <p className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Problem Statement</p>
-          <p className="text-sm text-slate-200 font-medium">
-            How should SoleSpace provision computing power for unpredictable sneaker drops without buying and maintaining dozens of physical servers?
-          </p>
-        </div>
-
-        {/* Options List */}
-        <div className="space-y-4">
-          {/* Option A */}
-          <div 
-            onClick={() => !isEvaluated && setSelectedOption('A')}
-            className={`p-4 rounded-xl border transition-all cursor-pointer Kes{
-              selectedOption === 'A' ? 'border-amber-500 bg-slate-900/90' : 'border-slate-800 bg-slate-900/60 hover:border-slate-700'
-            }`}
-          >
-            <div className="flex items-start gap-3">
-              <input type="radio" checked={selectedOption === 'A'} readOnly className="mt-1 accent-emerald-500" />
-              <div>
-                <p className="text-sm font-semibold text-white">A. Purchase 15 physical server racks and install an industrial generator in the headquarters basement.</p>
-                {isEvaluated && selectedOption === 'A' && (
-                  <p className="text-xs text-amber-400 mt-2">Diagnostic: Results in idle hardware waste 95% of the month with high CapEx and physical maintenance overhead.</p>
-                )}
-              </div>
+      {/* 1. Thandi's Briefing Memo Card */}
+      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-4 shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl pointer-events-none" />
+        
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold border border-emerald-500/20">
+              TM
+            </div>
+            <div>
+              <h3 className="text-white font-bold text-base">Thandi Mokoena</h3>
+              <p className="text-xs text-slate-400">IT Operations Manager • SoleSpace E-Commerce</p>
             </div>
           </div>
-
-          {/* Option B (Best Answer) */}
-          <div 
-            onClick={() => !isEvaluated && setSelectedOption('B')}
-            className={`p-4 rounded-xl border transition-all cursor-pointer Kes{
-              selectedOption === 'B' 
-                ? 'border-emerald-500 bg-emerald-950/20 shadow-lg shadow-emerald-950/20' 
-                : 'border-slate-800 bg-slate-900/60 hover:border-slate-700'
-            }`}
-          >
-            <div className="flex items-start gap-3">
-              <input type="radio" checked={selectedOption === 'B'} readOnly className="mt-1 accent-emerald-500" />
-              <div className="w-full">
-                <div className="flex justify-between items-center">
-                  <p className="text-sm font-semibold text-white">B. Migrate the store to a Public Cloud provider (like Microsoft Azure) using an on-demand consumption model.</p>
-                  <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 px-2.5 py-0.5 rounded font-bold">BEST ANSWER</span>
-                </div>
-                
-                {isEvaluated && selectedOption === 'B' && (
-                  <div className="mt-3 pt-3 border-t border-slate-800 space-y-2 text-xs text-slate-300">
-                    <div className="flex items-start gap-2 text-emerald-400 font-semibold">
-                      <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
-                      <span>Correct Architecture: Public Cloud provides instant elasticity. Resources automatically scale up during the 2-hour sneaker rush and spin down afterward.</span>
-                    </div>
-                    <div className="flex items-start gap-2 text-amber-400">
-                      <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                      <span>Real-World Nuance (AZ-900 Insight): Cloud is not magic free money. Without cost governance, your OpEx bill can exceed your original CapEx budget.</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Option C */}
-          <div 
-            onClick={() => !isEvaluated && setSelectedOption('C')}
-            className={`p-4 rounded-xl border transition-all cursor-pointer Kes{
-              selectedOption === 'C' ? 'border-amber-500 bg-slate-900/90' : 'border-slate-800 bg-slate-900/60 hover:border-slate-700'
-            }`}
-          >
-            <div className="flex items-start gap-3">
-              <input type="radio" checked={selectedOption === 'C'} readOnly className="mt-1 accent-emerald-500" />
-              <div>
-                <p className="text-sm font-semibold text-white">C. Lease private floor space in a commercial data center to construct a dedicated Private Cloud.</p>
-                {isEvaluated && selectedOption === 'C' && (
-                  <p className="text-xs text-amber-400 mt-2">Diagnostic: Retains hardware procurement burdens and virtualization staffing costs.</p>
-                )}
-              </div>
-            </div>
-          </div>
+          <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-semibold border border-amber-500/20">
+            Mandatory Briefing
+          </span>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex justify-between items-center pt-4">
-          {!isEvaluated ? (
-            <button 
-              onClick={handleEvaluate}
-              disabled={!selectedOption}
-              className={`font-bold px-6 py-3 rounded-lg transition-all cursor-pointer Kes{
-                selectedOption ? 'bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700' : 'bg-slate-800/40 text-slate-500 cursor-not-allowed'
-              }`}
-            >
-              Evaluate Recommendation
-            </button>
-          ) : (
-            <div />
-          )}
+        <blockquote className="text-slate-300 text-sm md:text-base italic leading-relaxed border-l-2 border-amber-500/50 pl-4 py-1">
+          &ldquo;Morning Intern, welcome to SoleSpace. I wish we had time for coffee, but we have an emergency. Yesterday was our exclusive Nairobi &amp; Jo&apos;burg sneaker drop. Within 4 minutes, 15,000 concurrent shoppers flooded our custom storefront. Our on-premises servers in the office basement overheated, our backup power tripped, and customers hit 504 Gateway Timeouts. We lost thousands in sales. The founders want to budget KES 40,000 to buy 20 more physical servers. That&apos;s total madness: servers sit idle every month until the next drop.&rdquo;
+        </blockquote>
+      </div>
 
-          {isEvaluated && (
-            <button 
-              onClick={() => onNext(100)}
-              className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-6 py-3 rounded-lg flex items-center gap-2 transition-all shadow-lg shadow-amber-500/20 cursor-pointer ml-auto"
-            >
-              Next: Manager Expectations (+100 XP) <ArrowRight className="w-4 h-4" />
-            </button>
-          )}
+      {/* 2. Fundamental Concept Cards (MOVED UP: Required Reading Before Decision) */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">
+          <BookOpen className="w-4 h-4" /> Required Reading: AZ-900 Core Cloud Concepts
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Concept 1 */}
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-2">
+            <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
+              <Server className="w-4 h-4" /> Cloud Models (IaaS)
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Moving physical servers to virtual machines (VMs) in the cloud (lift-and-shift) completely mitigates on-premises hardware cooling and physical failure risks.
+            </p>
+          </div>
+
+          {/* Concept 2 */}
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-2">
+            <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
+              <Zap className="w-4 h-4" /> Cloud Elasticity
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              The ability to automatically and dynamically expand or contract computing resources in real time to match sudden traffic spikes, then shrink back down to zero idle waste.
+            </p>
+          </div>
+
+          {/* Concept 3 */}
+          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-2">
+            <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
+              <ShieldCheck className="w-4 h-4" /> CapEx vs. OpEx
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              CapEx requires heavy upfront physical hardware spending. OpEx is a consumption-based operational model where you only pay for resources when actively used.
+            </p>
+          </div>
         </div>
       </div>
+
+      {/* 3. Strategic Decision Response Options (Placed After Concepts) */}
+      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6 shadow-xl">
+        <h3 className="text-lg font-bold text-white flex items-center gap-2">
+          <span>Select Your Professional Response to Thandi</span>
+        </h3>
+
+        <div className="space-y-4">
+          
+          {/* Option A: Recommended Strategy (Correct) */}
+          <div
+            onClick={() => !hasSubmitted && setSelectedChoice('recommended')}
+            className={`p-5 rounded-xl border-2 transition-all cursor-pointer ${
+              selectedChoice === 'recommended'
+                ? 'bg-emerald-950/20 border-emerald-500 shadow-lg shadow-emerald-500/10'
+                : 'bg-slate-950/50 border-slate-800 hover:border-slate-700'
+            }`}
+          >
+            <div className="flex items-start gap-3">
+              <div className={`mt-0.5 w-5 h-5 rounded-full border flex items-center justify-center ${selectedChoice === 'recommended' ? 'border-emerald-400 bg-emerald-500/20 text-emerald-400' : 'border-slate-600'}`}>
+                {selectedChoice === 'recommended' && <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />}
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase">
+                    Recommended Strategy (Correct Choice)
+                  </span>
+                </div>
+                <p className="text-sm text-slate-200 font-medium leading-relaxed">
+                  &ldquo;Understood, Thandi. Buying 20 physical servers is a classic CapEx trap—we&apos;d sink thousands into hardware that sits idle 28 days a month. Let&apos;s deploy an agile migration strategy to Azure (IaaS) for better risk mitigation. This stops our capital losses and allows full cloud elasticity.&rdquo;
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Option B: Traditional On-Premises Strategy (Incorrect Trap) */}
+          <div
+            onClick={() => !hasSubmitted && setSelectedChoice('traditional')}
+            className={`p-5 rounded-xl border-2 transition-all cursor-pointer ${
+              selectedChoice === 'traditional'
+                ? 'bg-rose-950/20 border-rose-500 shadow-lg shadow-rose-500/10'
+                : 'bg-slate-950/50 border-slate-800 hover:border-slate-700'
+            }`}
+          >
+            <div className="flex items-start gap-3">
+              <div className={`mt-0.5 w-5 h-5 rounded-full border flex items-center justify-center ${selectedChoice === 'traditional' ? 'border-rose-400 bg-rose-500/20 text-rose-400' : 'border-slate-600'}`}>
+                {selectedChoice === 'traditional' && <div className="w-2.5 h-2.5 rounded-full bg-rose-400" />}
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold px-2 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/30 uppercase">
+                    Traditional On-Premises Strategy (Costly Mistake Trap)
+                  </span>
+                </div>
+                <p className="text-sm text-slate-400 font-medium leading-relaxed">
+                  &ldquo;Support the founders&apos; plan to budget for 20 more physical servers in the basement. It&apos;s better to have 100% control over the hardware, even if it causes massive Capital Expense (CapEx) and leaves servers idle during non-drop weeks.&rdquo;
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Action / Submit Button */}
+        <div className="pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-4">
+          <div className="text-xs text-slate-400">
+            {hasSubmitted ? (
+              <span className="text-emerald-400 font-semibold flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4" /> Decision registered successfully! Ready for proposal workspace.
+              </span>
+            ) : (
+              <span>Select the correct cloud-native strategy to unlock maximum XP.</span>
+            )}
+          </div>
+
+          {!hasSubmitted ? (
+            <button
+              onClick={handleSubmit}
+              disabled={!selectedChoice}
+              className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-sm flex items-center gap-2 transition shadow-lg shadow-emerald-500/20 cursor-pointer disabled:opacity-50"
+            >
+              Confirm Strategic Decision <ArrowRight className="w-4 h-4" />
+            </button>
+          ) : (
+            <button
+              onClick={() => onNext(100)}
+              className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-black text-sm flex items-center gap-2 transition shadow-lg shadow-amber-500/20 cursor-pointer animate-bounce"
+            >
+              Move to Solution Prep &amp; Board Meeting (+50 XP) <ArrowRight className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+      </div>
+
     </div>
   );
 };
+
+export default ScreenDecision;
