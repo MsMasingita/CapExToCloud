@@ -11,6 +11,21 @@ export function App() {
   const [xp, setXp] = useState(50);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+  // Linear screen sequence array to manage one-step backward navigation
+  const screenSequence: Array<'onboarding' | 'briefing' | 'decision' | 'proposal'> = [
+    'onboarding',
+    'briefing',
+    'decision',
+    'proposal'
+  ];
+
+  const handleBack = () => {
+    const currentIndex = screenSequence.indexOf(currentScreen);
+    if (currentIndex > 0) {
+      setCurrentScreen(screenSequence[currentIndex - 1]);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-slate-950">
       
@@ -18,7 +33,7 @@ export function App() {
       <header className="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-40 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           
-          {/* Left Side: Logo & Return to Desk Button */}
+          {/* Left Side: Logo & Navigation Buttons */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center font-black text-slate-950 text-lg shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-400/30">
@@ -39,27 +54,46 @@ export function App() {
               </div>
             </div>
 
-            {/* Return to Desk button (only shows when not on onboarding) */}
+            {/* Desktop Navigation Buttons (Shows when not on onboarding) */}
             {currentScreen !== 'onboarding' && (
-              <button
-                onClick={() => setCurrentScreen('onboarding')}
-                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800/80 hover:bg-slate-700 hover:text-white rounded-lg transition border border-slate-700/50 cursor-pointer"
-              >
-                <span>← Return to Desk</span>
-              </button>
+              <div className="hidden md:flex items-center gap-2">
+                {/* Back Button: Step 1 step backward */}
+                <button
+                  onClick={handleBack}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800/80 hover:bg-slate-700 hover:text-white rounded-lg transition border border-slate-700/50 cursor-pointer"
+                >
+                  <span>← Back</span>
+                </button>
+
+                {/* Return to Desk Button: Direct to onboarding */}
+                <button
+                  onClick={() => setCurrentScreen('onboarding')}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800/80 hover:bg-slate-700 hover:text-white rounded-lg transition border border-slate-700/50 cursor-pointer"
+                >
+                  <span>Return to Desk</span>
+                </button>
+              </div>
             )}
           </div>
 
           {/* Header Controls (XP & Resources) */}
-          <div className="flex items-center gap-4">
-            {/* Mobile Return to Desk Button */}
+          <div className="flex items-center gap-3 md:gap-4">
+            {/* Mobile Navigation Buttons */}
             {currentScreen !== 'onboarding' && (
-              <button
-                onClick={() => setCurrentScreen('onboarding')}
-                className="md:hidden flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700/50 cursor-pointer"
-              >
-                <span>← Desk</span>
-              </button>
+              <div className="md:hidden flex items-center gap-1.5">
+                <button
+                  onClick={handleBack}
+                  className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700/50 cursor-pointer"
+                >
+                  <span>← Back</span>
+                </button>
+                <button
+                  onClick={() => setCurrentScreen('onboarding')}
+                  className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700/50 cursor-pointer"
+                >
+                  <span>Desk</span>
+                </button>
+              </div>
             )}
 
             {/* XP Badge */}
@@ -81,8 +115,6 @@ export function App() {
         </div>
       </header>
 
-      {/* Main Content Area */}
-      {/* Main Content Area */}
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col">
         {currentScreen === 'onboarding' && (
