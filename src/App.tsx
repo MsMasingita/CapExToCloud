@@ -5,7 +5,7 @@ import { ScreenDecision } from './components/ScreenDecision';
 import { ScreenStudyLab } from './components/ScreenStudyLab';
 import { ScreenGlossaryDeck } from './components/ScreenGlossaryDeck';
 import { ScreenProposalWorkspace } from './components/ScreenProposalWorkspace';
-import { ScreenBoardroomDefense } from './components/ScreenBoardroomDefense';
+import ScreenBoardroomDefense from './components/ScreenBoardroomDefense';
 import { ScreenGraduationTransfer } from './components/ScreenGraduationTransfer';
 import ResourceDrawer from './ResourceDrawer';
 import { Zap, BookOpen } from 'lucide-react';
