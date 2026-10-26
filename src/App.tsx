@@ -1,7 +1,9 @@
 // src/App.tsx
 import { useState, useEffect } from 'react';
 import ScreenOnboarding from './components/ScreenOnboarding';
+import { ScreenBriefing } from './components/ScreenBriefing';
 import { ScreenDecision } from './components/ScreenDecision';
+import { ScreenDecisionEduBridge } from './components/ScreenDecisionEduBridge';
 import { ScreenStudyLab } from './components/ScreenStudyLab';
 import { ScreenGlossaryDeck } from './components/ScreenGlossaryDeck';
 import { ScreenProposalWorkspace } from './components/ScreenProposalWorkspace';
@@ -11,17 +13,26 @@ import { ScreenAfriHealthDomain2 } from './components/ScreenAfriHealthDomain2';
 import { ScreenAfriHealthGraduationTransfer } from './components/ScreenAfriHealthGraduationTransfer';
 import ResourceDrawer from './ResourceDrawer';
 import { Zap, BookOpen } from 'lucide-react';
+import {
+  EDUBRIDGE_BOARD_CHALLENGES,
+  EDUBRIDGE_STUDY_LAB_UNITS,
+  EDUBRIDGE_PANIC_MATCHER_DATA,
+  EDUBRIDGE_PROPOSAL_DATA,
+} from './data/eduBridgeData';
 
-type ScreenType = 
-  | 'onboarding' 
-  | 'decision' 
-  | 'studylab' 
-  | 'glossary' 
-  | 'proposal' 
-  | 'defense' 
-  | 'transfer' 
-  | 'afrihealth' 
-  | 'afrihealth-transfer' 
+export type DomainId = 'solespace' | 'afrihealth' | 'edubridge';
+
+type ScreenType =
+  | 'onboarding'
+  | 'briefing'
+  | 'decision'
+  | 'studylab'
+  | 'glossary'
+  | 'proposal'
+  | 'defense'
+  | 'transfer'
+  | 'afrihealth'
+  | 'afrihealth-transfer'
   | 'edubridge';
 
 const STORAGE_KEY = 'capextocloud_state_v1';
@@ -38,6 +49,17 @@ export function App() {
       }
     }
     return 'onboarding';
+  });
+
+  const [activeDomain, setActiveDomain] = useState<DomainId>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed.activeDomain || 'solespace';
+      } catch (e) {}
+    }
+    return 'solespace';
   });
 
   const [xp, setXp] = useState<number>(() => {
@@ -78,35 +100,68 @@ export function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ currentScreen, xp, domain1Completed, domain2Completed }));
-  }, [currentScreen, xp, domain1Completed, domain2Completed]);
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ currentScreen, activeDomain, xp, domain1Completed, domain2Completed })
+    );
+  }, [currentScreen, activeDomain, xp, domain1Completed, domain2Completed]);
 
-  // Screen sequence for standard back navigation
-  const screenSequence: ScreenType[] = [
-    'onboarding',
-    'decision',
-    'studylab',
-    'glossary',
-    'proposal',
-    'defense',
-    'transfer',
-    'afrihealth',
-    'afrihealth-transfer',
-    'edubridge'
-  ];
-
-  const handleBack = () => {
-    const currentIndex = screenSequence.indexOf(currentScreen);
-    if (currentIndex > 0) {
-      setCurrentScreen(screenSequence[currentIndex - 1]);
-    } else {
-      setCurrentScreen('onboarding');
+  const getDomainLabel = () => {
+    if (activeDomain === 'edubridge' || currentScreen === 'edubridge') {
+      return 'EduBridge Academy Track (Domain 3)';
     }
+    if (activeDomain === 'afrihealth' || currentScreen === 'afrihealth' || currentScreen === 'afrihealth-transfer') {
+      return 'AfriHealth Track (Domain 2)';
+    }
+    return 'SoleSpace Track (Domain 1)';
   };
 
   const handleReturnToDesk = () => {
     setCurrentScreen('onboarding');
   };
+
+  const handleBack = () => {
+    switch (currentScreen) {
+      case 'briefing':
+        setCurrentScreen('onboarding');
+        break;
+      case 'decision':
+        setCurrentScreen('briefing');
+        break;
+      case 'studylab':
+        setCurrentScreen('decision');
+        break;
+      case 'glossary':
+        setCurrentScreen('studylab');
+        break;
+      case 'proposal':
+        setCurrentScreen('glossary');
+        break;
+      case 'defense':
+        setCurrentScreen('proposal');
+        break;
+      case 'transfer':
+        setCurrentScreen('defense');
+        break;
+      case 'afrihealth':
+        setCurrentScreen('onboarding');
+        break;
+      case 'afrihealth-transfer':
+        setCurrentScreen('afrihealth');
+        break;
+      default:
+        setCurrentScreen('onboarding');
+        break;
+    }
+  };
+
+  const BriefingComp = ScreenBriefing as any;
+  const DecisionComp = ScreenDecision as any;
+  const StudyLabComp = ScreenStudyLab as any;
+  const GlossaryComp = ScreenGlossaryDeck as any;
+  const ProposalComp = ScreenProposalWorkspace as any;
+  const DefenseComp = ScreenBoardroomDefense as any;
+  const TransferComp = ScreenGraduationTransfer as any;
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-slate-950">
@@ -126,12 +181,28 @@ export function App() {
                     CapExTo<span className="text-emerald-400">Cloud</span>
                   </h1>
                   <span className="text-[10px] bg-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-md border border-slate-700">
-                    {currentScreen === 'afrihealth' || currentScreen === 'afrihealth-transfer' 
-                      ? 'AfriHealth Track (Domain 2)' 
-                      : currentScreen === 'edubridge' 
-                      ? 'EduBridge Track (Domain 3)' 
-                      : 'SoleSpace Track (Domain 1)'}
+                    {getDomainLabel()}
                   </span>
+
+                  {/* Track Switcher */}
+                  <select
+                    value={activeDomain}
+                    onChange={(e) => {
+                      const selected = e.target.value as DomainId;
+                      setActiveDomain(selected);
+                      if (selected === 'afrihealth') {
+                        setCurrentScreen('afrihealth');
+                      } else {
+                        setCurrentScreen('briefing');
+                      }
+                    }}
+                    className="text-[10px] bg-slate-900 border border-slate-700 text-emerald-400 font-bold px-1.5 py-0.5 rounded cursor-pointer outline-none"
+                    title="Track Switcher"
+                  >
+                    <option value="solespace">SoleSpace (D1)</option>
+                    <option value="afrihealth">AfriHealth (D2)</option>
+                    <option value="edubridge">EduBridge (D3)</option>
+                  </select>
                 </div>
                 <p className="text-xs text-slate-400 font-medium hidden sm:block">
                   Unofficial AZ-900 Companion • Interactive Scenario Engine
@@ -199,80 +270,120 @@ export function App() {
           <ScreenOnboarding
             domain1Completed={domain1Completed}
             domain2Completed={domain2Completed}
-            onAcceptTrack={() => setCurrentScreen('decision')}
+            onAcceptTrack={() => {
+              setActiveDomain('solespace');
+              setCurrentScreen('briefing');
+            }}
             onSelectAfriHealthTrack={() => {
-              if (domain1Completed) setCurrentScreen('afrihealth');
+              setActiveDomain('afrihealth');
+              setCurrentScreen('afrihealth');
             }}
             onSelectEduBridgeTrack={() => {
-              if (domain2Completed) {
-                alert('EduBridge Academy (Domain 3) scenario engine is ready to deploy!');
-              }
+              setActiveDomain('edubridge');
+              setCurrentScreen('briefing');
+            }}
+          />
+        )}
+
+        {currentScreen === 'briefing' && (
+          <BriefingComp
+            xp={xp}
+            domain={activeDomain}
+            onProceed={() => {
+              setXp((prev: number) => prev + 25);
+              setCurrentScreen('decision');
             }}
           />
         )}
 
         {currentScreen === 'decision' && (
-          <ScreenDecision
-            xp={xp}
-            onNext={(points) => {
-              setXp((prev) => prev + points);
-              setCurrentScreen('studylab');
-            }}
-          />
+          activeDomain === 'edubridge' ? (
+            <ScreenDecisionEduBridge
+              xp={xp}
+              onNext={(points: number) => {
+                setXp((prev: number) => prev + points);
+                setCurrentScreen('studylab');
+              }}
+            />
+          ) : (
+            <DecisionComp
+              xp={xp}
+              decisionData={undefined}
+              onNext={(points: number) => {
+                setXp((prev: number) => prev + points);
+                setCurrentScreen('studylab');
+              }}
+            />
+          )
         )}
 
         {currentScreen === 'studylab' && (
-          <ScreenStudyLab
+          <StudyLabComp
             xp={xp}
+            studyUnits={activeDomain === 'edubridge' ? EDUBRIDGE_STUDY_LAB_UNITS : undefined}
             onBack={() => setCurrentScreen('decision')}
-            onProceed={(points) => {
-              setXp((prev) => prev + points);
+            onProceed={(points: number) => {
+              setXp((prev: number) => prev + points);
               setCurrentScreen('glossary');
             }}
           />
         )}
 
         {currentScreen === 'glossary' && (
-          <ScreenGlossaryDeck
+          <GlossaryComp
             xp={xp}
+            glossaryData={activeDomain === 'edubridge' ? EDUBRIDGE_PANIC_MATCHER_DATA : undefined}
             onBack={() => setCurrentScreen('studylab')}
-            onProceed={(earnedBonus) => {
-              setXp((prev) => prev + earnedBonus);
+            onProceed={(earnedBonus: number) => {
+              setXp((prev: number) => prev + earnedBonus);
               setCurrentScreen('proposal');
             }}
           />
         )}
 
         {currentScreen === 'proposal' && (
-          <ScreenProposalWorkspace
+          <ProposalComp
             xp={xp}
+            proposalData={activeDomain === 'edubridge' ? EDUBRIDGE_PROPOSAL_DATA : undefined}
             onBack={() => setCurrentScreen('glossary')}
-            onProceed={(earnedBonus) => {
-              setXp((prev) => prev + earnedBonus);
+            onProceed={(earnedBonus: number) => {
+              setXp((prev: number) => prev + earnedBonus);
               setCurrentScreen('defense');
             }}
           />
         )}
 
         {currentScreen === 'defense' && (
-          <ScreenBoardroomDefense
+          <DefenseComp
             xp={xp}
+            challenges={activeDomain === 'edubridge' ? EDUBRIDGE_BOARD_CHALLENGES : undefined}
             onBack={() => setCurrentScreen('proposal')}
             onRestart={handleReturnToDesk}
             onProceedToTransfer={() => {
-              setDomain1Completed(true);
-              setXp((prev) => prev + 250);
+              if (activeDomain === 'solespace') {
+                setDomain1Completed(true);
+              }
+              setXp((prev: number) => prev + 250);
               setCurrentScreen('transfer');
             }}
           />
         )}
 
         {currentScreen === 'transfer' && (
-          <ScreenGraduationTransfer
+          <TransferComp
             xp={xp}
+            domain={activeDomain}
+            videoSrc={
+              activeDomain === 'edubridge'
+                ? '/videos/zawadi-domain3-complete.mp4'
+                : '/videos/zawadi-transfer.mp4'
+            }
             onBack={() => setCurrentScreen('defense')}
             onRestart={handleReturnToDesk}
-            onLaunchDomain2={() => setCurrentScreen('afrihealth')}
+            onLaunchDomain2={() => {
+              setActiveDomain('afrihealth');
+              setCurrentScreen('afrihealth');
+            }}
           />
         )}
 
@@ -282,7 +393,7 @@ export function App() {
             onBack={() => setCurrentScreen('onboarding')}
             onCompleteDomain2={() => {
               setDomain2Completed(true);
-              setXp((prev) => prev + 150);
+              setXp((prev: number) => prev + 150);
               setCurrentScreen('afrihealth-transfer');
             }}
           />
@@ -294,7 +405,8 @@ export function App() {
             onBack={() => setCurrentScreen('afrihealth')}
             onRestart={handleReturnToDesk}
             onLaunchDomain3={() => {
-              alert('EduBridge Academy (Domain 3) scenario engine is ready to deploy!');
+              setActiveDomain('edubridge');
+              setCurrentScreen('briefing');
             }}
           />
         )}

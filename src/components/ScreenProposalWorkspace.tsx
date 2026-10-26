@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   Zap, 
   ArrowRight, 
@@ -15,11 +15,14 @@ import {
   MessageSquare,
   X,
   Send,
-  Bot
+  Bot,
+  Lock,
+  Globe
 } from 'lucide-react';
 
 interface ScreenProposalWorkspaceProps {
   xp: number;
+  proposalData?: any;
   onProceed: (earnedXp: number) => void;
   onBack: () => void;
 }
@@ -46,7 +49,7 @@ interface ChatMessage {
   text: string;
 }
 
-const PROPOSAL_SECTIONS: ProposalSection[] = [
+const DEFAULT_PROPOSAL_SECTIONS: ProposalSection[] = [
   {
     id: 'financial',
     title: '1. Financial Strategy & Budget Shift',
@@ -148,7 +151,42 @@ const PROPOSAL_SECTIONS: ProposalSection[] = [
   }
 ];
 
-export const ScreenProposalWorkspace: React.FC<ScreenProposalWorkspaceProps> = ({ xp, onProceed, onBack }) => {
+export const ScreenProposalWorkspace: React.FC<ScreenProposalWorkspaceProps> = ({ xp, proposalData, onProceed, onBack }) => {
+  const isCustomDomain = Boolean(proposalData && proposalData.clauses);
+
+  const activeSections: ProposalSection[] = useMemo(() => {
+    if (!isCustomDomain) {
+      return DEFAULT_PROPOSAL_SECTIONS;
+    }
+
+    const clauseIcons = [
+      <Globe key="1" className="w-5 h-5 text-emerald-400" />,
+      <ShieldCheck key="2" className="w-5 h-5 text-teal-400" />,
+      <Lock key="3" className="w-5 h-5 text-amber-400" />
+    ];
+
+    return proposalData.clauses.map((c: any, idx: number) => ({
+      id: c.id,
+      title: c.title,
+      subtitle: idx === 0 ? 'Data Sovereignty & Regions' : idx === 1 ? 'Zero Trust & Access Control' : 'Accidental Deletion Safeguards',
+      icon: clauseIcons[idx % clauseIcons.length],
+      prompt: c.prompt,
+      options: c.options.map((opt: any, optIdx: number) => {
+        const isOpt = optIdx === 0;
+        return {
+          id: `${c.id}-opt-${optIdx}`,
+          label: opt.text.split('.')[0] + '.',
+          description: opt.text,
+          impact: opt.impact,
+          isOptimal: isOpt,
+          feedback: isOpt
+            ? 'Optimal Clause! Fully aligns with Azure AZ-900 governance best practices and data protection standards.'
+            : 'Needs Revision. Leaves EduBridge vulnerable to compliance penalties, data loss, or administrative risk.'
+        };
+      })
+    }));
+  }, [proposalData, isCustomDomain]);
+
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [earnedBonusXp, setEarnedBonusXp] = useState<number>(0);
 
@@ -159,7 +197,9 @@ export const ScreenProposalWorkspace: React.FC<ScreenProposalWorkspaceProps> = (
     {
       id: '1',
       sender: 'mentor',
-      text: "Habari! I am Zawadi Mutua, your Cloud Systems Mentor. Thandi and the board expect a solid technical foundation. If you need a refresher on CapEx vs OpEx, PaaS benefits, or Azure Availability Zones before locking in your proposal clauses, ask me right here!"
+      text: isCustomDomain
+        ? "Habari! I am Zawadi Mutua, your Cloud Systems Mentor. EduBridge's board of directors needs airtight governance. If you need clarity on Management Group policies, RBAC vs Entra ID, or Resource Locks, ask me right here!"
+        : "Habari! I am Zawadi Mutua, your Cloud Systems Mentor. Thandi and the board expect a solid technical foundation. If you need a refresher on CapEx vs OpEx, PaaS benefits, or Azure Availability Zones before locking in your proposal clauses, ask me right here!"
     }
   ]);
 
@@ -172,13 +212,13 @@ export const ScreenProposalWorkspace: React.FC<ScreenProposalWorkspaceProps> = (
     }
   };
 
-  const optimalCount = PROPOSAL_SECTIONS.filter((sec) => {
+  const optimalCount = activeSections.filter((sec) => {
     const selectedId = selectedOptions[sec.id];
     const opt = sec.options.find((o) => o.id === selectedId);
     return opt?.isOptimal;
   }).length;
 
-  const isProposalReady = optimalCount === PROPOSAL_SECTIONS.length;
+  const isProposalReady = optimalCount === activeSections.length && activeSections.length > 0;
 
   // Zawadi's Contextual Query Responder
   const handleSendMessage = (textToSend?: string) => {
@@ -198,14 +238,26 @@ export const ScreenProposalWorkspace: React.FC<ScreenProposalWorkspaceProps> = (
       let reply = "Remember, the AZ-900 framework focuses on three pillars: OpEx agility, managed PaaS offloading, and multi-zone physical high availability.";
       const q = query.toLowerCase();
 
-      if (q.includes('capex') || q.includes('opex') || q.includes('cost') || q.includes('money') || q.includes('financial')) {
-        reply = "Here is the key distinction: CapEx forces SoleSpace to spend hefty capital upfront on depreciating hardware that sits idle 28 days a month. OpEx is pure consumption billing—you pay only for compute seconds during actual sneaker drops.";
-      } else if (q.includes('paas') || q.includes('iaas') || q.includes('saas') || q.includes('service model')) {
-        reply = "With IaaS, we still have to patch Linux/Windows VMs ourselves. With SaaS, we lose our custom sneaker raffle algorithm. PaaS (Azure App Service + Azure SQL) is the sweet spot: Azure automates the OS and backups, while we keep full ownership of our code.";
-      } else if (q.includes('zone') || q.includes('elasticity') || q.includes('scale') || q.includes('sla') || q.includes('resilience')) {
-        reply = "Autoscaling handles Elasticity (spiking compute for the 4-minute drop). Availability Zones provide physical isolation (separate power, cooling, and networking within the region) with an enterprise 99.99% uptime SLA.";
-      } else if (q.includes('hint') || q.includes('stuck') || q.includes('help')) {
-        reply = "My recommendation for the board: pick OpEx for cost discipline, PaaS so our dev team stops playing sysadmin, and Autoscaling + Availability Zones for bulletproof drop uptime.";
+      if (isCustomDomain) {
+        if (q.includes('policy') || q.includes('region') || q.includes('sovereign') || q.includes('country')) {
+          reply = "Azure Policy assigned at the Root Management Group enforces rules programmatically across all 12 African campus subscriptions, blocking non-compliant regions before deployment.";
+        } else if (q.includes('rbac') || q.includes('entra') || q.includes('password') || q.includes('identity')) {
+          reply = "Eliminate shared root passwords! Microsoft Entra ID enforces individual accounts with MFA, while Azure RBAC applies Least Privilege so tutors only access their specific student resource groups.";
+        } else if (q.includes('lock') || q.includes('delete') || q.includes('transcript') || q.includes('accidental')) {
+          reply = "Use CanNotDelete Resource Locks on production student registries! Even subscription owners cannot delete locked resources until the lock is deliberately removed.";
+        } else {
+          reply = "For EduBridge's charter, ensure you select: Root Management Group Policies for region restrictions, Entra ID + RBAC for credential security, and CanNotDelete Locks for database protection.";
+        }
+      } else {
+        if (q.includes('capex') || q.includes('opex') || q.includes('cost') || q.includes('money') || q.includes('financial')) {
+          reply = "Here is the key distinction: CapEx forces SoleSpace to spend hefty capital upfront on depreciating hardware that sits idle 28 days a month. OpEx is pure consumption billing—you pay only for compute seconds during actual sneaker drops.";
+        } else if (q.includes('paas') || q.includes('iaas') || q.includes('saas') || q.includes('service model')) {
+          reply = "With IaaS, we still have to patch Linux/Windows VMs ourselves. With SaaS, we lose our custom sneaker raffle algorithm. PaaS (Azure App Service + Azure SQL) is the sweet spot: Azure automates the OS and backups, while we keep full ownership of our code.";
+        } else if (q.includes('zone') || q.includes('elasticity') || q.includes('scale') || q.includes('sla') || q.includes('resilience')) {
+          reply = "Autoscaling handles Elasticity (spiking compute for the 4-minute drop). Availability Zones provide physical isolation (separate power, cooling, and networking within the region) with an enterprise 99.99% uptime SLA.";
+        } else {
+          reply = "My recommendation for the board: pick OpEx for cost discipline, PaaS so our dev team stops playing sysadmin, and Autoscaling + Availability Zones for bulletproof drop uptime.";
+        }
       }
 
       const mentorMsg: ChatMessage = {
@@ -230,7 +282,7 @@ export const ScreenProposalWorkspace: React.FC<ScreenProposalWorkspaceProps> = (
               className="flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-amber-400 transition cursor-pointer group"
             >
               <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-              <span>Back to Glossary Deck</span>
+              <span>Back to Panic Matcher</span>
             </button>
 
             <div>
@@ -238,10 +290,12 @@ export const ScreenProposalWorkspace: React.FC<ScreenProposalWorkspaceProps> = (
                 <span className="text-[11px] font-bold tracking-wider uppercase text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2.5 py-0.5 rounded-full">
                   Stage 5: Migration Proposal Workspace
                 </span>
-                <span className="text-xs text-slate-400 font-medium">Domain 1: Cloud Concepts (Module 3)</span>
+                <span className="text-xs text-slate-400 font-medium">
+                  {isCustomDomain ? 'Domain 3: Governance, Security & Management' : 'Domain 1: Cloud Concepts (Module 3)'}
+                </span>
               </div>
               <h2 className="text-2xl font-black tracking-tight text-white">
-                C-Suite Cloud Modernization Proposal
+                {isCustomDomain ? 'EduBridge Pan-African Governance Charter' : 'C-Suite Cloud Modernization Proposal'}
               </h2>
             </div>
           </div>
@@ -272,10 +326,12 @@ export const ScreenProposalWorkspace: React.FC<ScreenProposalWorkspaceProps> = (
             <HelpCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
             <div className="space-y-1">
               <p className="text-xs font-bold text-amber-400 uppercase tracking-wider">
-                Thandi &amp; Zawadi&apos;s Strategy: Formulate The Executive Clauses
+                {isCustomDomain ? 'Dean Ochieng & Zawadi: Draft the Pan-African Governance Charter' : 'Thandi & Zawadi\'s Strategy: Formulate The Executive Clauses'}
               </p>
               <p className="text-sm text-slate-300 leading-relaxed">
-                The boardroom meets shortly. Review each proposal dimension below and select the optimal cloud strategy to resolve SoleSpace&apos;s outages. Each optimal clause awards <strong className="text-emerald-400">+50 XP</strong> and locks in the executive business case. If you get stuck on a cloud term, click <strong className="text-emerald-400">Ask Zawadi</strong> in the top header.
+                {isCustomDomain
+                  ? 'The EduBridge Board of Directors convenes shortly. Formulate the three mandatory governance clauses below. Each optimal provision awards +50 XP and locks in your compliance defense.'
+                  : 'The boardroom meets shortly. Review each proposal dimension below and select the optimal cloud strategy to resolve SoleSpace\'s outages. Each optimal clause awards +50 XP and locks in the executive business case.'}
               </p>
             </div>
           </div>
@@ -284,9 +340,9 @@ export const ScreenProposalWorkspace: React.FC<ScreenProposalWorkspaceProps> = (
         {/* Main Grid: Section Clauses vs. Live Executive Dossier */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-          {/* Left Column (7 cols): Drafting Sections */}
+          {/* Left Column: Drafting Sections */}
           <div className="lg:col-span-7 space-y-6">
-            {PROPOSAL_SECTIONS.map((section) => {
+            {activeSections.map((section) => {
               const currentSelectedId = selectedOptions[section.id];
               const selectedOption = section.options.find((o) => o.id === currentSelectedId);
 
@@ -384,7 +440,7 @@ export const ScreenProposalWorkspace: React.FC<ScreenProposalWorkspaceProps> = (
             })}
           </div>
 
-          {/* Right Column (5 cols): Live Executive Dossier */}
+          {/* Right Column: Live Executive Dossier */}
           <div className="lg:col-span-5 space-y-4">
             
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-2xl sticky top-6 space-y-4">
@@ -396,56 +452,50 @@ export const ScreenProposalWorkspace: React.FC<ScreenProposalWorkspaceProps> = (
                   </h3>
                 </div>
                 <span className="text-xs font-mono text-emerald-400 font-bold">
-                  {optimalCount} / 3 Clauses Approved
+                  {optimalCount} / {activeSections.length} Clauses Approved
                 </span>
               </div>
 
               {/* Dossier Body */}
               <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-4 text-xs font-sans shadow-inner">
                 <div className="border-b border-slate-800 pb-2">
-                  <span className="text-[10px] text-amber-400 font-mono uppercase">Executive Document #AZ-900-MIG</span>
-                  <h4 className="text-sm font-black text-white">Project SoleSpace Cloud Transition Charter</h4>
+                  <span className="text-[10px] text-amber-400 font-mono uppercase">
+                    {isCustomDomain ? 'Executive Charter #AZ-900-GOV' : 'Executive Document #AZ-900-MIG'}
+                  </span>
+                  <h4 className="text-sm font-black text-white">
+                    {isCustomDomain ? 'EduBridge Pan-African Governance Charter' : 'Project SoleSpace Cloud Transition Charter'}
+                  </h4>
                 </div>
 
-                {/* Financial Strategy Preview */}
-                <div className="space-y-1">
-                  <span className="text-[11px] font-bold text-slate-400 uppercase">Cost Model:</span>
-                  <p className="text-slate-200 italic">
-                    {selectedOptions['financial']
-                      ? PROPOSAL_SECTIONS[0].options.find(o => o.id === selectedOptions['financial'])?.label
-                      : 'Pending formulation...'}
-                  </p>
-                </div>
-
-                {/* Architecture Model Preview */}
-                <div className="space-y-1">
-                  <span className="text-[11px] font-bold text-slate-400 uppercase">Compute & Data Tier:</span>
-                  <p className="text-slate-200 italic">
-                    {selectedOptions['architecture']
-                      ? PROPOSAL_SECTIONS[1].options.find(o => o.id === selectedOptions['architecture'])?.label
-                      : 'Pending formulation...'}
-                  </p>
-                </div>
-
-                {/* Resiliency Preview */}
-                <div className="space-y-1">
-                  <span className="text-[11px] font-bold text-slate-400 uppercase">Resilience & SLA Commitment:</span>
-                  <p className="text-slate-200 italic">
-                    {selectedOptions['resilience']
-                      ? PROPOSAL_SECTIONS[2].options.find(o => o.id === selectedOptions['resilience'])?.label
-                      : 'Pending formulation...'}
-                  </p>
-                </div>
+                {/* Section Previews */}
+                {activeSections.map((sec) => (
+                  <div key={sec.id} className="space-y-1">
+                    <span className="text-[11px] font-bold text-slate-400 uppercase">{sec.title.split('.')[1] || sec.title}:</span>
+                    <p className="text-slate-200 italic">
+                      {selectedOptions[sec.id]
+                        ? sec.options.find(o => o.id === selectedOptions[sec.id])?.label
+                        : 'Pending formulation...'}
+                    </p>
+                  </div>
+                ))}
 
                 {/* Financial Comparison Summary Box */}
                 <div className="mt-4 p-3 rounded-lg bg-slate-900 border border-slate-800 space-y-2">
                   <div className="flex items-center justify-between text-[11px] font-bold text-slate-300">
-                    <span className="flex items-center gap-1.5"><Server className="w-3.5 h-3.5 text-red-400" /> On-Prem Basement (CapEx)</span>
-                    <span className="text-red-400">R 450,000 Upfront / 3-Yr</span>
+                    <span className="flex items-center gap-1.5"><Server className="w-3.5 h-3.5 text-red-400" /> {isCustomDomain ? 'Unmanaged Risk' : 'On-Prem Basement (CapEx)'}</span>
+                    <span className="text-red-400">
+                      {isCustomDomain && proposalData?.dossierSummary?.unmanagedRisk
+                        ? proposalData.dossierSummary.unmanagedRisk
+                        : 'R 450,000 Upfront / 3-Yr'}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between text-[11px] font-bold text-slate-300">
-                    <span className="flex items-center gap-1.5"><TrendingDown className="w-3.5 h-3.5 text-emerald-400" /> Azure Consumption (OpEx)</span>
-                    <span className="text-emerald-400">R 12,500 / Month (Usage-tied)</span>
+                    <span className="flex items-center gap-1.5"><TrendingDown className="w-3.5 h-3.5 text-emerald-400" /> {isCustomDomain ? 'Governed Architecture' : 'Azure Consumption (OpEx)'}</span>
+                    <span className="text-emerald-400">
+                      {isCustomDomain && proposalData?.dossierSummary?.governedArchitecture
+                        ? proposalData.dossierSummary.governedArchitecture
+                        : 'R 12,500 / Month (Usage-tied)'}
+                    </span>
                   </div>
                 </div>
 
@@ -453,12 +503,14 @@ export const ScreenProposalWorkspace: React.FC<ScreenProposalWorkspaceProps> = (
                 <div className="space-y-1 pt-2 border-t border-slate-800">
                   <div className="flex justify-between text-[10px] text-slate-400">
                     <span>Boardroom Readiness</span>
-                    <span className="font-bold text-white">{Math.round((optimalCount / 3) * 100)}%</span>
+                    <span className="font-bold text-white">
+                      {activeSections.length > 0 ? Math.round((optimalCount / activeSections.length) * 100) : 0}%
+                    </span>
                   </div>
                   <div className="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
                     <div 
                       className="bg-emerald-500 h-full transition-all duration-300"
-                      style={{ width: `${(optimalCount / 3) * 100}%` }}
+                      style={{ width: `${activeSections.length > 0 ? (optimalCount / activeSections.length) * 100 : 0}%` }}
                     />
                   </div>
                 </div>
@@ -514,24 +566,49 @@ export const ScreenProposalWorkspace: React.FC<ScreenProposalWorkspaceProps> = (
 
           {/* Quick Concept Hint Chips */}
           <div className="px-3 py-2 bg-slate-950/50 border-b border-slate-800/80 flex gap-1.5 overflow-x-auto text-[11px] no-scrollbar">
-            <button
-              onClick={() => handleSendMessage('Explain CapEx vs OpEx in simple terms')}
-              className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full whitespace-nowrap border border-slate-700 cursor-pointer"
-            >
-              CapEx vs OpEx?
-            </button>
-            <button
-              onClick={() => handleSendMessage('Why PaaS instead of IaaS or SaaS?')}
-              className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full whitespace-nowrap border border-slate-700 cursor-pointer"
-            >
-              Why PaaS?
-            </button>
-            <button
-              onClick={() => handleSendMessage('How do Availability Zones prevent downtime?')}
-              className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full whitespace-nowrap border border-slate-700 cursor-pointer"
-            >
-              Availability Zones?
-            </button>
+            {isCustomDomain ? (
+              <>
+                <button
+                  onClick={() => handleSendMessage('How does Azure Policy restrict regions?')}
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full whitespace-nowrap border border-slate-700 cursor-pointer"
+                >
+                  Azure Policy Regions?
+                </button>
+                <button
+                  onClick={() => handleSendMessage('Why use RBAC instead of shared passwords?')}
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full whitespace-nowrap border border-slate-700 cursor-pointer"
+                >
+                  Entra ID & RBAC?
+                </button>
+                <button
+                  onClick={() => handleSendMessage('How do Resource Locks prevent deletion?')}
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full whitespace-nowrap border border-slate-700 cursor-pointer"
+                >
+                  Resource Locks?
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => handleSendMessage('Explain CapEx vs OpEx in simple terms')}
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full whitespace-nowrap border border-slate-700 cursor-pointer"
+                >
+                  CapEx vs OpEx?
+                </button>
+                <button
+                  onClick={() => handleSendMessage('Why PaaS instead of IaaS or SaaS?')}
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full whitespace-nowrap border border-slate-700 cursor-pointer"
+                >
+                  Why PaaS?
+                </button>
+                <button
+                  onClick={() => handleSendMessage('How do Availability Zones prevent downtime?')}
+                  className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-full whitespace-nowrap border border-slate-700 cursor-pointer"
+                >
+                  Availability Zones?
+                </button>
+              </>
+            )}
           </div>
 
           {/* Message Stream */}
