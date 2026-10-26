@@ -69,10 +69,13 @@ export function App() {
                   {getDomainLabel(activeDomain)}
                 </span>
 
-                {/* Dev Quick Selector: Easily test EduBridge locally without bypassing unlock gating */}
+                {/* Dev Quick Selector: Switching domain immediately resets screen to 'briefing' */}
                 <select
                   value={activeDomain}
-                  onChange={(e) => setActiveDomain(e.target.value as DomainId)}
+                  onChange={(e) => {
+                    setActiveDomain(e.target.value as DomainId);
+                    setCurrentScreen('briefing');
+                  }}
                   className="text-[10px] bg-slate-900 border border-slate-700 text-emerald-400 font-bold px-1.5 py-0.5 rounded cursor-pointer outline-none"
                   title="Dev Track Switcher"
                 >
