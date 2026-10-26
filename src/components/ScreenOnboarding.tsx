@@ -1,16 +1,26 @@
 // src/components/ScreenOnboarding.tsx
 import React, { useState } from 'react';
-import { ArrowRight, Building2, UserCheck, Zap, ShieldCheck, Database, Sparkles, BookOpen, Cpu, Award, AlertTriangle } from 'lucide-react';
+import { ArrowRight, Building2, UserCheck, Zap, ShieldCheck, Database, Sparkles, BookOpen, Cpu, Award, AlertTriangle, Lock, Info } from 'lucide-react';
 
 interface ScreenOnboardingProps {
   onAcceptTrack: () => void;
   onSelectAfriHealthTrack?: () => void;
+  onSelectEduBridgeTrack?: () => void;
+  domain1Completed: boolean;
+  domain2Completed: boolean;
 }
 
-export const ScreenOnboarding: React.FC<ScreenOnboardingProps> = ({ onAcceptTrack, onSelectAfriHealthTrack }) => {
+export const ScreenOnboarding: React.FC<ScreenOnboardingProps> = ({ 
+  onAcceptTrack, 
+  onSelectAfriHealthTrack, 
+  onSelectEduBridgeTrack,
+  domain1Completed,
+  domain2Completed
+}) => {
   const [nameInput, setNameInput] = useState('');
   const [internName, setInternName] = useState('');
   const [isGenerated, setIsGenerated] = useState(false);
+  const [lockNotice, setLockNotice] = useState<string | null>(null);
 
   const handleGenerateBadge = (e: React.FormEvent) => {
     e.preventDefault();
@@ -233,13 +243,31 @@ export const ScreenOnboarding: React.FC<ScreenOnboardingProps> = ({ onAcceptTrac
           <p className="text-sm text-slate-400">Choose your industry scenario to begin your cloud architecture simulation.</p>
         </div>
 
+        {/* Interactive Lock Notice Banner */}
+        {lockNotice && (
+          <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 flex items-center justify-between animate-fadeIn">
+            <div className="flex items-center gap-3">
+              <Info className="w-5 h-5 text-amber-400 flex-shrink-0" />
+              <span className="text-xs md:text-sm font-medium">{lockNotice}</span>
+            </div>
+            <button 
+              onClick={() => setLockNotice(null)}
+              className="text-xs font-bold text-amber-400 hover:text-white px-3 py-1 rounded bg-amber-500/20 transition cursor-pointer"
+            >
+              Got it
+            </button>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
-          {/* TRACK 1 */}
-          <div className="bg-slate-900/90 border-2 border-emerald-500 rounded-2xl p-6 space-y-4 shadow-2xl relative">
+          {/* TRACK 1: SOLESPACE (DOMAIN 1) */}
+          <div className={`bg-slate-900/90 border-2 ${domain1Completed ? 'border-emerald-500/60' : 'border-emerald-500'} rounded-2xl p-6 space-y-4 shadow-2xl relative`}>
             <div className="flex items-center justify-between">
               <Building2 className="w-6 h-6 text-emerald-400" />
-              <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/30">Active Track</span>
+              <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${domain1Completed ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'}`}>
+                {domain1Completed ? 'Domain 1 • Completed ✓' : 'Active Track'}
+              </span>
             </div>
             <h3 className="text-xl font-bold text-white">SoleSpace E-Commerce</h3>
             <p className="text-xs text-slate-400 leading-relaxed">
@@ -249,41 +277,66 @@ export const ScreenOnboarding: React.FC<ScreenOnboardingProps> = ({ onAcceptTrac
               onClick={onAcceptTrack}
               className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition cursor-pointer flex items-center justify-center gap-2"
             >
-              Launch SoleSpace Assignment <ArrowRight className="w-4 h-4" />
+              {domain1Completed ? 'Replay Domain 1 Assignment' : 'Launch SoleSpace Assignment'} <ArrowRight className="w-4 h-4" />
             </button>
           </div>
 
-          {/* TRACK 2: AFRIHEALTH TELEMED (DOMAIN 2 - UNLOCKED) */}
-          <div className="bg-slate-900/90 border-2 border-teal-500/80 hover:border-teal-400 rounded-2xl p-6 space-y-4 shadow-2xl transition group">
+          {/* TRACK 2: AFRIHEALTH TELEMED (DOMAIN 2) */}
+          <div className={`bg-slate-900/90 border-2 rounded-2xl p-6 space-y-4 shadow-2xl transition ${domain1Completed ? 'border-teal-500/80 hover:border-teal-400' : 'border-slate-800/80 opacity-75'}`}>
             <div className="flex items-center justify-between">
-              <Database className="w-6 h-6 text-teal-400" />
-              <span className="px-2.5 py-1 rounded-full bg-teal-500/10 text-teal-400 text-xs font-bold border border-teal-500/30">Domain 2 • Available</span>
+              <Database className={`w-6 h-6 ${domain1Completed ? 'text-teal-400' : 'text-slate-500'}`} />
+              <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${domain1Completed ? (domain2Completed ? 'bg-teal-500/20 text-teal-300 border-teal-500/40' : 'bg-teal-500/10 text-teal-400 border-teal-500/30') : 'bg-slate-800 text-slate-400 border-slate-700'}`}>
+                {domain1Completed ? (domain2Completed ? 'Domain 2 • Completed ✓' : 'Domain 2 • Unlocked') : 'Locked'}
+              </span>
             </div>
-            <h3 className="text-xl font-bold text-white group-hover:text-teal-400 transition-colors">AfriHealth Telemed</h3>
+            <h3 className={`text-xl font-bold ${domain1Completed ? 'text-white' : 'text-slate-300'}`}>AfriHealth Telemed</h3>
             <p className="text-xs text-slate-400 leading-relaxed">
               Healthcare Data Residency &amp; Hybrid Cloud Migration. Configure LRS/GZRS storage tiers and regional compliance.
             </p>
-            <button
-              onClick={onSelectAfriHealthTrack}
-              className="w-full py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-teal-500/20"
-            >
-              Launch AfriHealth Track (Domain 2) <ArrowRight className="w-4 h-4" />
-            </button>
+            {domain1Completed ? (
+              <button
+                onClick={onSelectAfriHealthTrack}
+                className="w-full py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-teal-500/20"
+              >
+                {domain2Completed ? 'Replay AfriHealth Track' : 'Launch AfriHealth Track (Domain 2)'} <ArrowRight className="w-4 h-4" />
+              </button>
+            ) : (
+              <button
+                onClick={() => setLockNotice(" AfriHealth Telemed is locked! You must complete Domain 1 (SoleSpace E-Commerce) and pass the Boardroom Defense quiz first.")}
+                className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition cursor-pointer flex items-center justify-center gap-2 border border-slate-700"
+              >
+                <Lock className="w-3.5 h-3.5 text-amber-400" /> Locked • Why is this locked?
+              </button>
+            )}
           </div>
 
-          {/* TRACK 3 */}
-          <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6 space-y-4 opacity-75">
+          {/* TRACK 3: EDUBRIDGE ACADEMY (DOMAIN 3) */}
+          <div className={`bg-slate-900/90 border-2 rounded-2xl p-6 space-y-4 shadow-2xl transition ${domain2Completed ? 'border-purple-500/80 hover:border-purple-400' : 'border-slate-800/80 opacity-75'}`}>
             <div className="flex items-center justify-between">
-              <ShieldCheck className="w-5 h-5 text-slate-500" />
-              <span className="px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 text-xs font-bold border border-slate-700">Locked • Domain 3</span>
+              <ShieldCheck className={`w-6 h-6 ${domain2Completed ? 'text-purple-400' : 'text-slate-500'}`} />
+              <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${domain2Completed ? 'bg-purple-500/10 text-purple-400 border-purple-500/30' : 'bg-slate-800 text-slate-400 border-slate-700'}`}>
+                {domain2Completed ? 'Domain 3 • Unlocked' : 'Locked'}
+              </span>
             </div>
-            <h3 className="text-lg font-bold text-slate-300">EduBridge Academy</h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Pan-African Student Portal Security &amp; Cost Management. Unlocks after Domain 2.
+            <h3 className={`text-xl font-bold ${domain2Completed ? 'text-white' : 'text-slate-300'}`}>EduBridge Academy</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Pan-African Student Portal Security, Cost Management, and Governance Compliance.
             </p>
-            <button disabled className="w-full py-3 rounded-xl bg-slate-800 text-slate-500 font-semibold text-xs cursor-not-allowed">
-              Locked
-            </button>
+            {domain2Completed ? (
+              <button
+                onClick={onSelectEduBridgeTrack}
+                className="w-full py-3 rounded-xl bg-purple-500 hover:bg-purple-400 text-slate-950 font-black text-xs transition cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-purple-500/20"
+              >
+                Launch EduBridge Track (Domain 3) <ArrowRight className="w-4 h-4" />
+              </button>
+            ) : (
+              <button
+                onClick={() => setLockNotice(" EduBridge Academy is locked! You must first complete Domain 2 (AfriHealth Telemed).")}
+                className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition cursor-pointer flex items-center justify-center gap-2 border border-slate-700"
+              >
+                <Lock className="w-3.5 h-3.5 text-amber-400" /> Locked • Why is this locked?
+              </button>
+            )}
           </div>
 
         </div>

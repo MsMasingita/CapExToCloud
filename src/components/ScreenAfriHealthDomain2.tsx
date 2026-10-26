@@ -1,6 +1,7 @@
 // src/components/ScreenAfriHealthDomain2.tsx
+// src/components/ScreenAfriHealthDomain2.tsx
 import React, { useState } from 'react';
-import { ArrowLeft, ArrowRight, Database, ShieldCheck, Server, Globe, Cpu, CheckCircle2, AlertTriangle, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Database, Cpu, CheckCircle2, Network } from 'lucide-react';
 
 interface ScreenAfriHealthDomain2Props {
   xp: number;
@@ -13,16 +14,45 @@ export const ScreenAfriHealthDomain2: React.FC<ScreenAfriHealthDomain2Props> = (
   onBack,
   onCompleteDomain2,
 }) => {
+  const [currentStage, setCurrentStage] = useState<1 | 2 | 3>(1);
+
+  // Stage 1 State: Storage & Region
   const [selectedStorage, setSelectedStorage] = useState<string>('blob-local');
   const [selectedRegion, setSelectedRegion] = useState<string>('south-africa-north');
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [quizPassed, setQuizPassed] = useState(false);
+  const [stage1Passed, setStage1Passed] = useState(false);
 
-  const handleArchitectureSubmit = (e: React.FormEvent) => {
+  // Stage 2 State: Compute
+  const [selectedCompute, setSelectedCompute] = useState<string>('vm');
+  const [stage2Passed, setStage2Passed] = useState(false);
+
+  // Stage 3 State: Networking
+  const [selectedNetwork, setSelectedNetwork] = useState<string>('vnet-vpn');
+  const [stage3Passed, setStage3Passed] = useState(false);
+
+  const handleStage1Submit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitted(true);
     if (selectedStorage === 'blob-geo' && selectedRegion === 'south-africa-north') {
-      setQuizPassed(true);
+      setStage1Passed(true);
+    } else {
+      setStage1Passed(false);
+    }
+  };
+
+  const handleStage2Submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedCompute === 'app-service') {
+      setStage2Passed(true);
+    } else {
+      setStage2Passed(false);
+    }
+  };
+
+  const handleStage3Submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedNetwork === 'expressroute') {
+      setStage3Passed(true);
+    } else {
+      setStage3Passed(false);
     }
   };
 
@@ -44,160 +74,218 @@ export const ScreenAfriHealthDomain2: React.FC<ScreenAfriHealthDomain2Props> = (
             Domain 2: Azure Architecture &amp; Services
           </span>
           <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-            Current XP: {xp + 25}
+            Current XP: {xp + (stage1Passed ? 25 : 0) + (stage2Passed ? 25 : 0) + (stage3Passed ? 50 : 0)}
           </span>
         </div>
       </div>
 
-      {/* Scenario Briefing Card */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6 shadow-2xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-48 h-48 bg-teal-500/5 rounded-full blur-3xl pointer-events-none" />
-        
-        <div className="flex items-start gap-4">
-          <div className="p-3 rounded-2xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
-            <Database className="w-7 h-7" />
-          </div>
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-teal-500/10 text-teal-400 text-xs font-bold border border-teal-500/30">
-              AfriHealth Telemed Crisis Briefing
-            </div>
-            <h1 className="text-2xl md:text-3xl font-black text-white">Patient Data Residency &amp; High-Availability Architecture</h1>
-            <p className="text-sm md:text-base text-slate-400 leading-relaxed max-w-4xl">
-              AfriHealth handles over 200,0ent telemed sessions daily across Kenya, Nigeria, and South Africa. Regulatory authorities require patient records to remain compliant with strict regional data residency laws while maintaining 99.99% uptime during network dropouts.
-            </p>
+      {/* Progress Tabs */}
+      <div className="grid grid-cols-3 gap-4">
+        <div className={`p-4 rounded-xl border flex items-center gap-3 transition ${currentStage === 1 ? 'bg-teal-500/10 border-teal-500 text-white' : 'bg-slate-900/40 border-slate-800 text-slate-400'}`}>
+          <div className="w-8 h-8 rounded-lg bg-slate-950 flex items-center justify-center font-bold text-teal-400 text-xs">01</div>
+          <div>
+            <h4 className="text-xs font-bold uppercase">Storage &amp; Region</h4>
+            <p className="text-[10px] text-slate-400">Data Residency &amp; GZRS</p>
           </div>
         </div>
 
-        {/* Architecture Workbench Form */}
-        <form onSubmit={handleArchitectureSubmit} className="space-y-6 pt-4 border-t border-slate-800">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <Cpu className="w-5 h-5 text-emerald-400" />
-            Step 1: Configure Azure Storage &amp; Regional Deployment
-          </h2>
+        <div className={`p-4 rounded-xl border flex items-center gap-3 transition ${currentStage === 2 ? 'bg-teal-500/10 border-teal-500 text-white' : 'bg-slate-900/40 border-slate-800 text-slate-400'}`}>
+          <div className="w-8 h-8 rounded-lg bg-slate-950 flex items-center justify-center font-bold text-teal-400 text-xs">02</div>
+          <div>
+            <h4 className="text-xs font-bold uppercase">Compute Services</h4>
+            <p className="text-[10px] text-slate-400">VMs vs. App Service</p>
+          </div>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            {/* Storage Configuration */}
-            <div className="space-y-3">
-              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
-                Select Storage Redundancy Tier
-              </label>
+        <div className={`p-4 rounded-xl border flex items-center gap-3 transition ${currentStage === 3 ? 'bg-teal-500/10 border-teal-500 text-white' : 'bg-slate-900/40 border-slate-800 text-slate-400'}`}>
+          <div className="w-8 h-8 rounded-lg bg-slate-950 flex items-center justify-center font-bold text-teal-400 text-xs">03</div>
+          <div>
+            <h4 className="text-xs font-bold uppercase">Hybrid Networking</h4>
+            <p className="text-[10px] text-slate-400">ExpressRoute &amp; VNets</p>
+          </div>
+        </div>
+      </div>
+
+      {/* STAGE 1: STORAGE & REGION */}
+      {currentStage === 1 && (
+        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6 shadow-2xl relative">
+          <div className="flex items-start gap-4">
+            <div className="p-3 rounded-2xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
+              <Database className="w-7 h-7" />
+            </div>
+            <div className="space-y-2">
+              <span className="px-2.5 py-0.5 rounded-full bg-teal-500/10 text-teal-400 text-xs font-bold border border-teal-500/30">
+                AfriHealth Crisis Briefing • Part 1
+              </span>
+              <h1 className="text-2xl md:text-3xl font-black text-white">Patient Data Residency &amp; Storage Redundancy</h1>
+              <p className="text-sm text-slate-400 leading-relaxed">
+                Configure compliant storage redundancy and regional deployment to safeguard 200,000 daily telemedicine sessions.
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={handleStage1Submit} className="space-y-6 pt-4 border-t border-slate-800">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-3">
-                <div 
-                  onClick={() => setSelectedStorage('blob-local')}
-                  className={`p-4 rounded-xl border transition cursor-pointer flex items-start gap-3 ${
-                    selectedStorage === 'blob-local' 
-                      ? 'bg-emerald-500/10 border-emerald-500 text-white' 
-                      : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700'
-                  }`}
-                >
-                  <Server className="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" />
-                  <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">Storage Redundancy Tier</label>
+                <div className="space-y-3">
+                  <div onClick={() => setSelectedStorage('blob-local')} className={`p-4 rounded-xl border transition cursor-pointer ${selectedStorage === 'blob-local' ? 'bg-teal-500/10 border-teal-500 text-white' : 'bg-slate-950/60 border-slate-800 text-slate-400'}`}>
                     <h3 className="text-sm font-bold text-white">Locally Redundant Storage (LRS)</h3>
-                    <p className="text-xs text-slate-400 mt-1">Lowest cost, but replicates data 3 times within a single physical data center.</p>
+                    <p className="text-xs text-slate-400 mt-1">Replicates 3 times within a single data center.</p>
                   </div>
-                </div>
-
-                <div 
-                  onClick={() => setSelectedStorage('blob-geo')}
-                  className={`p-4 rounded-xl border transition cursor-pointer flex items-start gap-3 ${
-                    selectedStorage === 'blob-geo' 
-                      ? 'bg-emerald-500/10 border-emerald-500 text-white' 
-                      : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700'
-                  }`}
-                >
-                  <ShieldCheck className="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" />
-                  <div>
+                  <div onClick={() => setSelectedStorage('blob-geo')} className={`p-4 rounded-xl border transition cursor-pointer ${selectedStorage === 'blob-geo' ? 'bg-teal-500/10 border-teal-500 text-white' : 'bg-slate-950/60 border-slate-800 text-slate-400'}`}>
                     <h3 className="text-sm font-bold text-white">Geo-Zone-Redundant Storage (GZRS)</h3>
-                    <p className="text-xs text-slate-400 mt-1">Recommended for healthcare: replicates across availability zones and secondary paired region.</p>
+                    <p className="text-xs text-slate-400 mt-1">Replicates across availability zones &amp; secondary paired region.</p>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Region Configuration */}
-            <div className="space-y-3">
-              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
-                Primary Azure Region Deployment
-              </label>
               <div className="space-y-3">
-                <div 
-                  onClick={() => setSelectedRegion('south-africa-north')}
-                  className={`p-4 rounded-xl border transition cursor-pointer flex items-start gap-3 ${
-                    selectedRegion === 'south-africa-north' 
-                      ? 'bg-emerald-500/10 border-emerald-500 text-white' 
-                      : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700'
-                  }`}
-                >
-                  <Globe className="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" />
-                  <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">Primary Azure Region</label>
+                <div className="space-y-3">
+                  <div onClick={() => setSelectedRegion('south-africa-north')} className={`p-4 rounded-xl border transition cursor-pointer ${selectedRegion === 'south-africa-north' ? 'bg-teal-500/10 border-teal-500 text-white' : 'bg-slate-950/60 border-slate-800 text-slate-400'}`}>
                     <h3 className="text-sm font-bold text-white">South Africa North (Johannesburg)</h3>
-                    <p className="text-xs text-slate-400 mt-1">Compliant regional hub with dual Availability Zones for low-latency telemetry.</p>
+                    <p className="text-xs text-slate-400 mt-1">Compliant regional hub with dual Availability Zones.</p>
                   </div>
-                </div>
-
-                <div 
-                  onClick={() => setSelectedRegion('us-east')}
-                  className={`p-4 rounded-xl border transition cursor-pointer flex items-start gap-3 ${
-                    selectedRegion === 'us-east' 
-                      ? 'bg-emerald-500/10 border-emerald-500 text-white' 
-                      : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700'
-                  }`}
-                >
-                  <Globe className="w-5 h-5 text-amber-400 mt-0.5 flex-shrink-0" />
-                  <div>
+                  <div onClick={() => setSelectedRegion('us-east')} className={`p-4 rounded-xl border transition cursor-pointer ${selectedRegion === 'us-east' ? 'bg-teal-500/10 border-teal-500 text-white' : 'bg-slate-950/60 border-slate-800 text-slate-400'}`}>
                     <h3 className="text-sm font-bold text-white">US East (Virginia)</h3>
-                    <p className="text-xs text-slate-400 mt-1">High capacity, but violates African data residency compliance mandates.</p>
+                    <p className="text-xs text-slate-400 mt-1">Violates African data residency compliance mandates.</p>
                   </div>
                 </div>
               </div>
             </div>
 
-          </div>
-
-          <div className="pt-4 flex justify-end">
-            <button
-              type="submit"
-              className="px-6 py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition shadow-lg shadow-teal-500/20 flex items-center gap-2 cursor-pointer uppercase"
-            >
-              <Sparkles className="w-4 h-4" />
-              <span>Verify Architecture Blueprint</span>
-            </button>
-          </div>
-        </form>
-
-        {/* Verification Result Feedback */}
-        {isSubmitted && (
-          <div className={`p-6 rounded-xl border animate-fadeIn space-y-3 ${
-            quizPassed ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-300' : 'bg-amber-500/10 border-amber-500/40 text-amber-300'
-          }`}>
-            <div className="flex items-center gap-3">
-              {quizPassed ? <CheckCircle2 className="w-6 h-6 text-emerald-400" /> : <AlertTriangle className="w-6 h-6 text-amber-400" />}
-              <h3 className="text-base font-bold text-white">
-                {quizPassed ? 'Architecture Approved by Compliance Officer!' : 'Compliance Warning Detected'}
-              </h3>
+            <div className="flex justify-end">
+              <button type="submit" className="px-6 py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition cursor-pointer uppercase">
+                Verify Storage Blueprint
+              </button>
             </div>
-            <p className="text-xs md:text-sm leading-relaxed">
-              {quizPassed 
-                ? 'Excellent choice! Using GZRS paired with South Africa North ensures multi-region fault tolerance and strict regulatory compliance for sensitive patient health records.'
-                : 'Review your selections: Choosing LRS or deploying outside African compliance zones risks severe regulatory penalties and downtime during regional outages.'}
-            </p>
+          </form>
 
-            {quizPassed && (
+          {stage1Passed && (
+            <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/40 text-emerald-300 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                <span className="text-sm font-bold">Stage 1 Verified! GZRS &amp; South Africa North approved.</span>
+              </div>
+              <button onClick={() => setCurrentStage(2)} className="px-4 py-2 rounded-lg bg-emerald-500 text-slate-950 font-bold text-xs flex items-center gap-2 cursor-pointer">
+                Proceed to Compute (Stage 2) <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* STAGE 2: COMPUTE SERVICES */}
+      {currentStage === 2 && (
+        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6 shadow-2xl relative">
+          <div className="flex items-start gap-4">
+            <div className="p-3 rounded-2xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
+              <Cpu className="w-7 h-7" />
+            </div>
+            <div className="space-y-2">
+              <span className="px-2.5 py-0.5 rounded-full bg-teal-500/10 text-teal-400 text-xs font-bold border border-teal-500/30">
+                AfriHealth Crisis Briefing • Part 2
+              </span>
+              <h1 className="text-2xl md:text-3xl font-black text-white">Choose Your Telemedicine Compute Service</h1>
+              <p className="text-sm text-slate-400 leading-relaxed">
+                Doctors need to deploy a rapid web application portal without managing underlying OS patches or virtual machine infrastructure.
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={handleStage2Submit} className="space-y-6 pt-4 border-t border-slate-800">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div onClick={() => setSelectedCompute('vm')} className={`p-4 rounded-xl border transition cursor-pointer ${selectedCompute === 'vm' ? 'bg-teal-500/10 border-teal-500 text-white' : 'bg-slate-950/60 border-slate-800 text-slate-400'}`}>
+                <h3 className="text-sm font-bold text-white">Azure Virtual Machines (IaaS)</h3>
+                <p className="text-xs text-slate-400 mt-1">Full control over OS, but requires manual patching and high maintenance.</p>
+              </div>
+
+              <div onClick={() => setSelectedCompute('app-service')} className={`p-4 rounded-xl border transition cursor-pointer ${selectedCompute === 'app-service' ? 'bg-teal-500/10 border-teal-500 text-white' : 'bg-slate-950/60 border-slate-800 text-slate-400'}`}>
+                <h3 className="text-sm font-bold text-white">Azure App Service (PaaS)</h3>
+                <p className="text-xs text-slate-400 mt-1">Managed platform designed for web apps with auto-scaling and built-in load balancing.</p>
+              </div>
+            </div>
+
+            <div className="flex justify-between">
+              <button type="button" onClick={() => setCurrentStage(1)} className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs">Back</button>
+              <button type="submit" className="px-6 py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition cursor-pointer uppercase">Verify Compute Selection</button>
+            </div>
+          </form>
+
+          {stage2Passed && (
+            <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/40 text-emerald-300 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                <span className="text-sm font-bold">Stage 2 Verified! Azure App Service (PaaS) selected for zero-maintenance scaling.</span>
+              </div>
+              <button onClick={() => setCurrentStage(3)} className="px-4 py-2 rounded-lg bg-emerald-500 text-slate-950 font-bold text-xs flex items-center gap-2 cursor-pointer">
+                Proceed to Networking (Stage 3) <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* STAGE 3: HYBRID NETWORKING */}
+      {currentStage === 3 && (
+        <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6 shadow-2xl relative">
+          <div className="flex items-start gap-4">
+            <div className="p-3 rounded-2xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
+              <Network className="w-7 h-7" />
+            </div>
+            <div className="space-y-2">
+              <span className="px-2.5 py-0.5 rounded-full bg-teal-500/10 text-teal-400 text-xs font-bold border border-teal-500/30">
+                AfriHealth Crisis Briefing • Part 3
+              </span>
+              <h1 className="text-2xl md:text-3xl font-black text-white">Secure Hospital-to-Cloud Connectivity</h1>
+              <p className="text-sm text-slate-400 leading-relaxed">
+                Nairobi General Hospital needs a dedicated, high-speed, reliable connection to Azure that bypasses the public internet entirely.
+              </p>
+            </div>
+          </div>
+
+          <form onSubmit={handleStage3Submit} className="space-y-6 pt-4 border-t border-slate-800">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div onClick={() => setSelectedNetwork('vnet-vpn')} className={`p-4 rounded-xl border transition cursor-pointer ${selectedNetwork === 'vnet-vpn' ? 'bg-teal-500/10 border-teal-500 text-white' : 'bg-slate-950/60 border-slate-800 text-slate-400'}`}>
+                <h3 className="text-sm font-bold text-white">Site-to-Site VPN over Public Internet</h3>
+                <p className="text-xs text-slate-400 mt-1">Encrypted tunnel, but subject to public internet jitter and bandwidth limits.</p>
+              </div>
+
+              <div onClick={() => setSelectedNetwork('expressroute')} className={`p-4 rounded-xl border transition cursor-pointer ${selectedNetwork === 'expressroute' ? 'bg-teal-500/10 border-teal-500 text-white' : 'bg-slate-950/60 border-slate-800 text-slate-400'}`}>
+                <h3 className="text-sm font-bold text-white">Azure ExpressRoute</h3>
+                <p className="text-xs text-slate-400 mt-1">Dedicated private connection offering higher security, reliability, and faster speeds.</p>
+              </div>
+            </div>
+
+            <div className="flex justify-between">
+              <button type="button" onClick={() => setCurrentStage(2)} className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs">Back</button>
+              <button type="submit" className="px-6 py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition cursor-pointer uppercase">Verify Network Architecture</button>
+            </div>
+          </form>
+
+          {stage3Passed && (
+            <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/40 text-emerald-300 space-y-3">
+              <div className="flex items-center gap-3">
+                <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+                <h3 className="text-base font-bold text-white">Domain 2 Architecture Fully Complete!</h3>
+              </div>
+              <p className="text-xs">You have successfully mastered Azure Storage redundancy, PaaS compute scaling, and ExpressRoute hybrid networking for AfriHealth.</p>
+
               <div className="pt-4 border-t border-emerald-500/30 flex justify-end">
                 <button
                   onClick={onCompleteDomain2}
                   className="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition shadow-lg flex items-center gap-2 cursor-pointer uppercase"
                 >
-                  <span>Unlock Domain 3 (EduBridge Academy)</span>
+                  <span>Complete Domain 2 &amp; Return to Hub (+100 XP)</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
+      )}
 
-      </div>
     </div>
   );
 };

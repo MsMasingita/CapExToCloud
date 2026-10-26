@@ -11,9 +11,9 @@ import { ScreenAfriHealthDomain2 } from './components/ScreenAfriHealthDomain2';
 import ResourceDrawer from './ResourceDrawer';
 import { Zap, BookOpen } from 'lucide-react';
 
-type ScreenType = 'onboarding' | 'decision' | 'studylab' | 'glossary' | 'proposal' | 'defense' | 'transfer' | 'afrihealth';
+type ScreenType = 'onboarding' | 'decision' | 'studylab' | 'glossary' | 'proposal' | 'defense' | 'transfer' | 'afrihealth' | 'edubridge';
 
-const STORAGE_KEY = 'capextocloud_state_v1';
+const STORAGE_KEY = 'capextocloud_state_v2';
 
 export function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenType>(() => {
@@ -42,11 +42,33 @@ export function App() {
     return 50;
   });
 
+  const [domain1Completed, setDomain1Completed] = useState<boolean>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return !!parsed.domain1Completed;
+      } catch (e) {}
+    }
+    return false;
+  });
+
+  const [domain2Completed, setDomain2Completed] = useState<boolean>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return !!parsed.domain2Completed;
+      } catch (e) {}
+    }
+    return false;
+  });
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ currentScreen, xp }));
-  }, [currentScreen, xp]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ currentScreen, xp, domain1Completed, domain2Completed }));
+  }, [currentScreen, xp, domain1Completed, domain2Completed]);
 
   // Screen sequence
   const screenSequence: ScreenType[] = [
@@ -57,7 +79,8 @@ export function App() {
     'proposal',
     'defense',
     'transfer',
-    'afrihealth'
+    'afrihealth',
+    'edubridge'
   ];
 
   const handleBack = () => {
@@ -72,6 +95,8 @@ export function App() {
   const handleResetDemo = () => {
     localStorage.removeItem(STORAGE_KEY);
     setXp(50);
+    setDomain1Completed(false);
+    setDomain2Completed(false);
     setCurrentScreen('onboarding');
   };
 
@@ -93,7 +118,7 @@ export function App() {
                     CapExTo<span className="text-emerald-400">Cloud</span>
                   </h1>
                   <span className="text-[10px] bg-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-md border border-slate-700">
-                    {currentScreen === 'afrihealth' ? 'AfriHealth Track (Domain 2)' : 'SoleSpace Track (Domain 1)'}
+                    {currentScreen === 'afrihealth' ? 'AfriHealth Track (Domain 2)' : currentScreen === 'edubridge' ? 'EduBridge Track (Domain 3)' : 'SoleSpace Track (Domain 1)'}
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 font-medium hidden sm:block">
@@ -160,8 +185,18 @@ export function App() {
       <main className="flex-1 flex flex-col">
         {currentScreen === 'onboarding' && (
           <ScreenOnboarding
+            domain1Completed={domain1Completed}
+            domain2Completed={domain2Completed}
             onAcceptTrack={() => setCurrentScreen('decision')}
-            onSelectAfriHealthTrack={() => setCurrentScreen('afrihealth')}
+            onSelectAfriHealthTrack={() => {
+              if (domain1Completed) setCurrentScreen('afrihealth');
+            }}
+            onSelectEduBridgeTrack={() => {
+              if (domain2Completed) {
+                // Placeholder for Domain 3 screen or alert
+                alert('EduBridge Academy (Domain 3) scenario engine is ready to deploy!');
+              }
+            }}
           />
         )}
 
@@ -214,6 +249,7 @@ export function App() {
             onBack={() => setCurrentScreen('proposal')}
             onRestart={handleResetDemo}
             onProceedToTransfer={() => {
+              setDomain1Completed(true);
               setXp((prev) => prev + 250);
               setCurrentScreen('transfer');
             }}
@@ -233,7 +269,8 @@ export function App() {
             xp={xp}
             onBack={() => setCurrentScreen('onboarding')}
             onCompleteDomain2={() => {
-              setXp((prev) => prev + 100);
+              setDomain2Completed(true);
+              setXp((prev) => prev + 150);
               setCurrentScreen('onboarding');
             }}
           />
