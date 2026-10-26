@@ -1,6 +1,6 @@
 // src/ResourceDrawer.tsx
-import React, { useState } from 'react';
-import { X, BookOpen } from 'lucide-react';
+import React from 'react';
+import { X, BookOpen, ExternalLink, PlaySquare, Award } from 'lucide-react';
 
 interface ResourceDrawerProps {
   isOpen: boolean;
@@ -8,119 +8,183 @@ interface ResourceDrawerProps {
 }
 
 export const ResourceDrawer: React.FC<ResourceDrawerProps> = ({ isOpen, onClose }) => {
-  const [activeTab, setActiveTab] = useState<'domain1' | 'domain2' | 'domain3'>('domain1');
-
   if (!isOpen) return null;
 
+  const resources = [
+    // Official & Practice Exams
+    {
+      type: 'official',
+      title: 'Official Microsoft Azure Fundamentals Practice Exam',
+      description: 'Take the official Microsoft practice assessment to test your readiness for the AZ-900 exam.',
+      url: 'https://learn.microsoft.com/en-us/credentials/certifications/azure-fundamentals/?practice-assessment-type=certification',
+      badge: 'Practice Exam'
+    },
+    {
+      type: 'official',
+      title: 'Microsoft Learn: Describe Cloud Concepts',
+      description: 'Official Microsoft AZ-900 learning path covering cloud models, shared responsibility, and economic benefits.',
+      url: 'https://learn.microsoft.com/en-gb/training/paths/microsoft-azure-fundamentals-describe-cloud-concepts/',
+      badge: 'Official Guide'
+    },
+    // Exam Prep
+    {
+      type: 'video',
+      title: 'AZ-900 Full Exam Prep & Cram Session',
+      description: 'Comprehensive exam preparation walkthrough with tips and targeted practice questions.',
+      url: 'https://www.youtube.com/watch?v=LpEG9RMNm90&t=13s',
+      badge: 'Exam Prep'
+    },
+    // Cloud Concepts & Masterclasses
+    {
+      type: 'video',
+      title: 'AZ-900 Cloud Concepts Masterclass (Part 1)',
+      description: 'Comprehensive video breakdown of cloud computing fundamentals for exam prep.',
+      url: 'https://www.youtube.com/watch?v=orwWx0_KEcA&list=PLahhVEj9XNTd6H2vpsvm_kBSMsMw9EMUL',
+      badge: 'Cloud Concepts'
+    },
+    {
+      type: 'video',
+      title: 'AZ-900 Core Cloud Services & Architecture',
+      description: 'Deep dive into Azure core architectural components and concepts.',
+      url: 'https://www.youtube.com/watch?v=lVccy2Nw70M&list=PLahhVEj9XNTd6H2vpsvm_kBSMsMw9EMUL&index=2',
+      badge: 'Cloud Concepts'
+    },
+    {
+      type: 'video',
+      title: 'Cloud Computing Architecture Overview',
+      description: 'Visual walkthrough of cloud infrastructure and high availability.',
+      url: 'https://www.youtube.com/watch?v=TMynEWIE3SM',
+      badge: 'Cloud Concepts'
+    },
+    {
+      type: 'video',
+      title: 'Azure Fundamentals Exam Prep: Cloud Models',
+      description: 'Focused breakdown of Public, Private, and Hybrid cloud deployment models.',
+      url: 'https://www.youtube.com/watch?v=7KEygnLtRyE',
+      badge: 'Cloud Concepts'
+    },
+    {
+      type: 'video',
+      title: 'CapEx vs OpEx in Cloud Economics',
+      description: 'Detailed analysis of capital expenditure versus operational expenditure.',
+      url: 'https://www.youtube.com/watch?v=NdqncsMtryY',
+      badge: 'Economics'
+    },
+    {
+      type: 'video',
+      title: 'Azure Global Infrastructure Explained',
+      description: 'Regions, availability zones, and datacenters overview for AZ-900.',
+      url: 'https://www.youtube.com/watch?v=9CVBohl6w0Q',
+      badge: 'Infrastructure'
+    },
+    {
+      type: 'video',
+      title: 'Cloud Concepts Final Review & Summary',
+      description: 'Rapid review session covering all key concepts for the AZ-900 exam.',
+      url: 'https://www.youtube.com/watch?v=XlNR7myQydI',
+      badge: 'Review'
+    },
+    // Architecture Links
+    {
+      type: 'video',
+      title: 'Azure Architecture Components & Services (Part 3)',
+      description: 'Detailed walkthrough of Azure architectural components and core services.',
+      url: 'https://www.youtube.com/watch?v=OWmC6K1O6lo&list=PLahhVEj9XNTd6H2vpsvm_kBSMsMw9EMUL&index=3',
+      badge: 'Architecture'
+    },
+    {
+      type: 'video',
+      title: 'Azure Regions, Zones & Resource Groups (Part 4)',
+      description: 'Understanding geographic distribution, availability zones, and resource grouping.',
+      url: 'https://www.youtube.com/watch?v=EDE7auxyeX8&list=PLahhVEj9XNTd6H2vpsvm_kBSMsMw9EMUL&index=4',
+      badge: 'Architecture'
+    },
+    {
+      type: 'video',
+      title: 'Azure Architecture Deep Dive (Session 17)',
+      description: 'Advanced structural breakdown of enterprise cloud architecture patterns.',
+      url: 'https://www.youtube.com/watch?v=aNK0C9Oj2sg&list=PLlVtbbG169nED0_vMEniWBQjSoxTsBYS3&index=17',
+      badge: 'Architecture'
+    },
+    {
+      type: 'video',
+      title: 'Azure Architecture Deep Dive (Session 19)',
+      description: 'Further exploration of scalable architecture and resilient cloud design.',
+      url: 'https://www.youtube.com/watch?v=AI2XoRFwqYE&list=PLlVtbbG169nED0_vMEniWBQjSoxTsBYS3&index=19',
+      badge: 'Architecture'
+    }
+  ];
+
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/80 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-xl bg-slate-900 border-l border-slate-800 h-full flex flex-col shadow-2xl">
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm animate-fadeIn">
+      <div className="w-full max-w-md bg-slate-900 border-l border-slate-800 h-full flex flex-col shadow-2xl overflow-hidden">
         
         {/* Drawer Header */}
         <div className="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-950/40">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
               <BookOpen className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">AZ-900 Certification Syllabus</h2>
-              <p className="text-xs text-slate-400">Complete Study Companion &amp; Reference Notes</p>
+              <h2 className="text-white font-bold text-base">My Files &amp; Tutorials</h2>
+              <p className="text-xs text-slate-400">AZ-900 Resource Hub &amp; Exam Prep</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Domain Navigation Tabs */}
-        <div className="flex border-b border-slate-800 bg-slate-950/60 p-2 gap-2">
-          <button
-            onClick={() => setActiveTab('domain1')}
-            className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'domain1'
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            Domain 1: Cloud Concepts
-          </button>
-          <button
-            onClick={() => setActiveTab('domain2')}
-            className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'domain2'
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            Domain 2: Architecture
-          </button>
-          <button
-            onClick={() => setActiveTab('domain3')}
-            className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'domain3'
-                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            Domain 3: Governance
-          </button>
+        {/* Resources List */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+            Curated Learning &amp; Practice Materials
+          </div>
+
+          {resources.map((res, index) => (
+            <a
+              key={index}
+              href={res.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group block bg-slate-950/50 hover:bg-slate-800/80 border border-slate-800 hover:border-emerald-500/40 rounded-xl p-4 transition-all shadow-sm"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 text-emerald-400">
+                    {res.badge === 'Practice Exam' ? <Award className="w-4 h-4" /> : res.type === 'official' ? <BookOpen className="w-4 h-4" /> : <PlaySquare className="w-4 h-4" />}
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-sm font-semibold text-white group-hover:text-emerald-300 transition-colors">
+                      {res.title}
+                    </span>
+                    <p className="text-xs text-slate-400 leading-relaxed">
+                      {res.description}
+                    </p>
+                  </div>
+                </div>
+                <ExternalLink className="w-4 h-4 text-slate-500 group-hover:text-emerald-400 transition-shrink flex-shrink-0 mt-1" />
+              </div>
+              <div className="mt-3 flex items-center justify-between">
+                <span className="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-md border border-slate-700">
+                  {res.badge}
+                </span>
+                <span className="text-[10px] text-emerald-400 font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                  Open Resource →
+                </span>
+              </div>
+            </a>
+          ))}
         </div>
 
-        {/* Drawer Content Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          
-          {activeTab === 'domain1' && (
-            <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 space-y-2">
-                <h3 className="text-sm font-bold text-emerald-400">CapEx vs. OpEx Financial Models</h3>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  <strong>Capital Expenditure (CapEx):</strong> High upfront costs for physical servers, infrastructure, and real estate. Value depreciates over time.
-                </p>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  <strong>Operational Expenditure (OpEx):</strong> Pay-as-you-go subscription model with zero upfront costs. Expenses match live traffic dynamically.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 space-y-2">
-                <h3 className="text-sm font-bold text-amber-400">High Availability &amp; Elasticity</h3>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  <strong>Elasticity:</strong> The ability to automatically scale up hardware resources during spikes (like flash sales in Nairobi) and scale down when traffic normalizes.
-                </p>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'domain2' && (
-            <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 space-y-2">
-                <h3 className="text-sm font-bold text-emerald-400">Azure Architecture Components</h3>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  <strong>Regions &amp; Availability Zones:</strong> Azure Regions (e.g., South Africa North) contain multiple isolated data centers ensuring fault tolerance.
-                </p>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  <strong>Virtual Machines &amp; App Services:</strong> IaaS vs PaaS hosting tradeoffs for backend e-commerce workloads.
-                </p>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'domain3' && (
-            <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 space-y-2">
-                <h3 className="text-sm font-bold text-emerald-400">Azure Management &amp; Cost Tools</h3>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  <strong>Cost Management &amp; Budgets:</strong> Setting spending caps and alerts in KSh/USD to prevent operational cost runaways.
-                </p>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  <strong>Azure Policy &amp; RBAC:</strong> Governance frameworks enforcing data residency laws across African jurisdictions.
-                </p>
-              </div>
-            </div>
-          )}
-
+        {/* Footer */}
+        <div className="p-4 border-t border-slate-800 bg-slate-950/60 text-center">
+          <p className="text-xs text-slate-500">
+            CapExToCloud • Built for SoleSpace Hackathon Demo
+          </p>
         </div>
 
       </div>

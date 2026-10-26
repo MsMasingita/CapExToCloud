@@ -1,7 +1,9 @@
+// src/components/ScreenGraduationTransfer.tsx
 import React, { useState, useRef } from 'react';
 import { 
   Zap, 
   ArrowLeft, 
+  ArrowRight,
   RotateCcw, 
   Award, 
   Layers, 
@@ -21,6 +23,7 @@ export interface ScreenGraduationTransferProps {
   videoSrc?: string;
   onBack: () => void;
   onRestart: () => void;
+  onLaunchDomain2?: () => void;
 }
 
 export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> = ({ 
@@ -28,7 +31,8 @@ export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> =
   domain, 
   videoSrc, 
   onBack, 
-  onRestart 
+  onRestart,
+  onLaunchDomain2 
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [videoEnded, setVideoEnded] = useState<boolean>(false);
@@ -97,7 +101,7 @@ export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> =
 
           {/* Video Player Card */}
           <div className="relative rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden shadow-2xl flex flex-col items-center justify-center p-3 md:p-6">
-            <div className="w-full max-w-2xl relative rounded-xl overflow-hidden border border-slate-800 shadow-2xl bg-black">
+            <div className="w-full max-2xl relative rounded-xl overflow-hidden border border-slate-800 shadow-2xl bg-black">
               <video
                 key={resolvedVideoSrc}
                 ref={videoRef}
@@ -172,8 +176,8 @@ export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> =
               </div>
               <div className="flex justify-between border-b border-slate-800 pb-2">
                 <span className="text-slate-400">{isEduBridge ? 'Enforced Scope:' : 'Assigned Next Entity:'}</span>
-                <span className="font-medium text-amber-400">
-                  {isEduBridge ? 'Root Management Group Hierarchy' : 'Kipaji Logistics Enterprise Cloud'}
+                <span className={`font-medium ${isEduBridge ? 'text-amber-400' : 'text-teal-400'}`}>
+                  {isEduBridge ? 'Root Management Group Hierarchy' : 'AfriHealth Telemed'}
                 </span>
               </div>
 
@@ -195,24 +199,30 @@ export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> =
             </div>
           </div>
 
-          {/* Roadmap Card */}
-          <div className="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-5">
+          {/* Module Roadmap Card */}
+          <div className={`lg:col-span-7 bg-slate-900 border ${isEduBridge ? 'border-slate-800' : 'border-teal-500/40'} rounded-2xl p-6 shadow-2xl space-y-5`}>
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <Layers className="w-5 h-5 text-emerald-400" />
+                <Layers className="w-5 h-5 text-teal-400" />
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                       {isEduBridge ? 'Track Summary • Competency Verified' : 'Next Milestone • Domain 2'}
                     </span>
-                    <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
-                      <CheckCircle2 className="w-2.5 h-2.5" /> Complete
-                    </span>
+                    {isEduBridge ? (
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                        <CheckCircle2 className="w-2.5 h-2.5" /> Complete
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/40 flex items-center gap-1">
+                        <Sparkles className="w-2.5 h-2.5" /> Domain 2 Unlocked
+                      </span>
+                    )}
                   </div>
                   <h3 className="text-base font-bold text-white">
                     {isEduBridge
                       ? 'Azure Governance, Privacy & Compliance Specialist'
-                      : 'Describe Azure Architecture and Services'}
+                      : 'Describe Azure Architecture and Services (AfriHealth Telemed)'}
                   </h3>
                 </div>
               </div>
@@ -224,7 +234,7 @@ export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> =
             <p className="text-xs text-slate-300 leading-relaxed">
               {isEduBridge
                 ? 'You have successfully safeguarded 12 African nations against runaway cloud expenses, credential leaks, and accidental database deletions using foundational AZ-900 controls:'
-                : 'You have mastered foundational cloud concepts. In the upcoming release, your deployment at Kipaji Logistics Enterprise Cloud unlocks hands-on architectural blueprints across three core areas:'}
+                : 'You have mastered foundational cloud concepts. Your deployment at AfriHealth Telemed unlocks hands-on architectural blueprints across three core areas:'}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -232,7 +242,7 @@ export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> =
                 <>
                   <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 space-y-1.5">
                     <div className="flex items-center gap-1.5 text-sky-400 text-xs font-bold">
-                      <Globe className="w-4 h-4" /> Policy & Hierarchy
+                      <Globe className="w-4 h-4" /> Policy &amp; Hierarchy
                     </div>
                     <p className="text-[11px] text-slate-400 leading-normal">
                       Cascading regional restrictions and tags across all subscriptions via Management Groups.
@@ -250,7 +260,7 @@ export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> =
 
                   <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 space-y-1.5">
                     <div className="flex items-center gap-1.5 text-emerald-400 text-xs font-bold">
-                      <ShieldCheck className="w-4 h-4" /> Entra ID & RBAC
+                      <ShieldCheck className="w-4 h-4" /> Entra ID &amp; RBAC
                     </div>
                     <p className="text-[11px] text-slate-400 leading-normal">
                       Least privilege access management replacing shared credentials with MFA-backed individual roles.
@@ -259,7 +269,7 @@ export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> =
                 </>
               ) : (
                 <>
-                  <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 space-y-1.5 opacity-80">
+                  <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 space-y-1.5">
                     <div className="flex items-center gap-1.5 text-sky-400 text-xs font-bold">
                       <Globe2 className="w-4 h-4" /> Global Regions
                     </div>
@@ -268,16 +278,16 @@ export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> =
                     </p>
                   </div>
 
-                  <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 space-y-1.5 opacity-80">
+                  <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 space-y-1.5">
                     <div className="flex items-center gap-1.5 text-emerald-400 text-xs font-bold">
-                      <Server className="w-4 h-4" /> Compute & Net
+                      <Server className="w-4 h-4" /> Compute &amp; Net
                     </div>
                     <p className="text-[11px] text-slate-400 leading-normal">
                       Virtual Machines, Containers, App Services, and Virtual Networks (VNets).
                     </p>
                   </div>
 
-                  <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 space-y-1.5 opacity-80">
+                  <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 space-y-1.5">
                     <div className="flex items-center gap-1.5 text-amber-400 text-xs font-bold">
                       <ShieldCheck className="w-4 h-4" /> Hierarchy
                     </div>
@@ -293,15 +303,27 @@ export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> =
             <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
               <button
                 onClick={onRestart}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                className="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition flex items-center justify-center gap-2 cursor-pointer shadow-md"
               >
-                <RotateCcw className="w-4 h-4" /> Replay CapExToCloud Track
+                <RotateCcw className="w-4 h-4" /> Return to Desk
               </button>
 
-              <div className="w-full sm:flex-1 px-5 py-2.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center justify-center gap-2 select-none">
-                <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Track Finished • Ready for AZ-900 Exam</span>
-              </div>
+              {isEduBridge ? (
+                <div className="w-full sm:flex-1 px-5 py-2.5 rounded-xl bg-emerald-950/30 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center justify-center gap-2 select-none">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Track Finished • Ready for AZ-900 Exam</span>
+                </div>
+              ) : (
+                onLaunchDomain2 && (
+                  <button
+                    onClick={onLaunchDomain2}
+                    className="w-full sm:flex-1 px-6 py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-lg shadow-teal-500/20 flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <span>Launch Domain 2: AfriHealth Telemed</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                )
+              )}
             </div>
           </div>
 
@@ -311,3 +333,5 @@ export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> =
     </div>
   );
 };
+
+export default ScreenGraduationTransfer;

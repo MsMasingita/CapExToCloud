@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+// src/components/ScreenBoardroomDefense.tsx
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   Zap, 
   ArrowLeft, 
@@ -51,7 +52,7 @@ const DEFAULT_BOARD_CHALLENGES: ExecutiveChallenge[] = [
     executive: 'Chinedu Okafor',
     role: 'Chief Information & Technology Officer (Panel Chair)',
     location: 'Lagos, Nigeria',
-    flag: '🇳🇬',
+    flag: 'NG',
     avatarId: 'chinedu',
     objection: '"As Chief, I answer directly to the founders for infrastructure integrity. If an Azure datacenter suffers an unpredicted power outage or fiber cut, what concrete architectural mechanism guarantees our e-commerce store does not hit a 504 Gateway Timeout?"',
     zawadiWhisper: 'Highlight Availability Zones! Independent power, cooling, and networking within the region ensure automated failover with 99.99% uptime SLAs.',
@@ -84,7 +85,7 @@ const DEFAULT_BOARD_CHALLENGES: ExecutiveChallenge[] = [
     executive: 'Wanjiku Mutua',
     role: 'VP of Global Operations',
     location: 'Nairobi, Kenya',
-    flag: '🇰🇪',
+    flag: 'KE',
     avatarId: 'wanjiku',
     objection: '"Our regional expansion relies on shopper trust and GDPR/POPIA compliance. If we host our catalog and customer records on Microsoft Azure, who guarantees technicians cannot inspect our raffle logic or user credentials?"',
     zawadiWhisper: 'Point her directly to the Shared Responsibility Model and customer data ownership guarantees in the Microsoft Trust Center.',
@@ -117,7 +118,7 @@ const DEFAULT_BOARD_CHALLENGES: ExecutiveChallenge[] = [
     executive: 'Kagiso Ndlovu',
     role: 'Financial Controller',
     location: 'Johannesburg, South Africa',
-    flag: '🇿🇦',
+    flag: 'ZA',
     avatarId: 'kagiso',
     objection: '"You want us to pivot from our fixed basement hardware to OpEx consumption pricing. What safeguards stop runaway auto-scaling or unintended API spikes from landing us with a bankrupting invoice?"',
     zawadiWhisper: 'Remind him about Azure Cost Management, spending quotas, and automated budget threshold alerts—variable consumption is disciplined by cloud governance.',
@@ -348,17 +349,17 @@ function ExecutiveAvatar({ avatarId, state }: { avatarId: 'chinedu' | 'wanjiku' 
   );
 }
 
-export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({ 
+export function ScreenBoardroomDefense({ 
   xp, 
   challenges,
   onRestart, 
   onBack, 
   onProceedToTransfer 
-}) => {
-  const isCustomDomain = Boolean(challenges && challenges.length > 0);
+}: ScreenBoardroomDefenseProps) {
+  const isCustomDomain = Boolean(challenges && Array.isArray(challenges) && challenges.length > 0);
 
   const activeChallenges: ExecutiveChallenge[] = useMemo(() => {
-    if (!isCustomDomain) {
+    if (!isCustomDomain || !challenges) {
       return DEFAULT_BOARD_CHALLENGES;
     }
 
@@ -483,7 +484,7 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
 
   return (
     <div className="min-h-screen bg-[#0F172A] text-slate-100 p-4 md:p-8 font-sans relative">
-      {defenseFinished && isApproved && <ConfettiCanvas />}
+      {defenseFinished && isApproved && <ConfettiCanvas/>}
 
       <div className="max-w-5xl mx-auto space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-800 gap-4">
@@ -493,7 +494,7 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
                 onClick={onBack}
                 className="flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-emerald-400 transition cursor-pointer group"
               >
-                <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1"/>
                 <span>Back to Proposal Workspace</span>
               </button>
             )}
@@ -501,7 +502,7 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-[11px] font-bold tracking-wider uppercase text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
-                  <Cpu className="w-3.5 h-3.5" /> Stage 6: Boardroom Cross-Examination
+                  <Cpu className="w-3.5 h-3.5"/> Stage 6: Boardroom Cross-Examination
                 </span>
                 <span className="text-xs text-slate-400 font-medium">
                   {isCustomDomain ? 'Domain 3: Governance, Security & Management Capstone' : 'Domain 1: Cloud Computing Concepts Capstone'}
@@ -514,7 +515,7 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
           </div>
 
           <div className="flex items-center gap-2 bg-slate-900/90 px-4 py-2 rounded-xl border border-slate-800 shadow-md">
-            <Zap className="w-4 h-4 fill-amber-400 text-amber-400" />
+            <Zap className="w-4 h-4 fill-amber-400 text-amber-400"/>
             <span className="text-amber-400 font-bold text-sm">{totalFinalXp} XP</span>
           </div>
         </div>
@@ -524,7 +525,7 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Users className="w-4 h-4 text-emerald-400" />
+                  <Users className="w-4 h-4 text-emerald-400"/>
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
                     C-Suite Confidence Meter
                   </span>
@@ -552,14 +553,11 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
             <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-5">
               <div className="flex items-start justify-between border-b border-slate-800 pb-4">
                 <div className="flex items-center gap-4">
-                  <ExecutiveAvatar 
-                    avatarId={currentChallenge.avatarId} 
-                    state={avatarState} 
-                  />
+                  <ExecutiveAvatar avatarId={currentChallenge.avatarId} state={avatarState}/>
                   <div className="space-y-0.5">
                     <div className="flex items-center gap-2">
                       <h3 className="text-base font-bold text-white">{currentChallenge.executive}</h3>
-                      <span className="text-base">{currentChallenge.flag}</span>
+                      <span className="text-xs font-mono font-bold bg-slate-800 px-2 py-0.5 rounded text-slate-300">{currentChallenge.flag}</span>
                     </div>
                     <p className="text-xs text-sky-400 font-semibold">{currentChallenge.role}</p>
                     <p className="text-[11px] text-slate-400 font-medium">{currentChallenge.location}</p>
@@ -574,7 +572,7 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
                     <span className={`text-[10px] font-bold mt-1 inline-block ${
                       chosenOption.isOptimal ? 'text-emerald-400' : 'text-red-400'
                     }`}>
-                      {chosenOption.isOptimal ? 'Satisfied ✓' : 'Skeptical ✕'}
+                      {chosenOption.isOptimal ? 'Satisfied [Passed]' : 'Skeptical [Failed]'}
                     </span>
                   )}
                 </div>
@@ -588,7 +586,7 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
               </div>
 
               <div className="p-3.5 rounded-xl bg-emerald-950/20 border border-emerald-500/30 flex items-start gap-3">
-                <MessageSquare className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <MessageSquare className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"/>
                 <div className="space-y-0.5 text-xs">
                   <p className="font-bold text-emerald-400">Zawadi&apos;s Ear-Piece Guidance:</p>
                   <p className="text-slate-300 leading-relaxed">{currentChallenge.zawadiWhisper}</p>
@@ -632,7 +630,7 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
                             <div className={`text-xs pt-2 border-t border-slate-800 flex items-start gap-2 ${
                               opt.isOptimal ? 'text-emerald-400' : 'text-red-400'
                             }`}>
-                              {opt.isOptimal ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertTriangle className="w-4 h-4 shrink-0" />}
+                              {opt.isOptimal ? <CheckCircle2 className="w-4 h-4 shrink-0"/> : <AlertTriangle className="w-4 h-4 shrink-0"/>}
                               <span>{opt.feedback}</span>
                             </div>
                           )}
@@ -664,7 +662,7 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
                   ? 'bg-gradient-to-br from-amber-400 to-emerald-500 shadow-emerald-500/20' 
                   : 'bg-gradient-to-br from-amber-500 to-red-500 shadow-amber-500/20'
               }`}>
-                {isApproved ? <Award className="w-8 h-8 text-slate-950" /> : <AlertTriangle className="w-8 h-8 text-slate-950" />}
+                {isApproved ? <Award className="w-8 h-8 text-slate-950"/> : <AlertTriangle className="w-8 h-8 text-slate-950"/>}
               </div>
               
               <span className={`text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full border ${
@@ -692,17 +690,16 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
               </p>
             </div>
 
-            {/* Targeted Guidance if failed */}
             {!isApproved && missedChallenges.length > 0 && (
               <div className="p-4 rounded-2xl bg-amber-950/20 border border-amber-500/30 text-left space-y-3">
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-400">
-                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <AlertTriangle className="w-4 h-4 shrink-0"/>
                   <span>Skeptical Stakeholders Requiring Strategic Revision ({missedChallenges.length})</span>
                 </div>
                 <div className="space-y-2">
                   {missedChallenges.map((challenge) => (
                     <div key={challenge.id} className="text-xs bg-slate-950/80 p-3 rounded-xl border border-slate-800 flex items-start gap-2.5">
-                      <span className="text-base">{challenge.flag}</span>
+                      <span className="font-mono font-bold text-amber-400">[{challenge.flag}]</span>
                       <div>
                         <span className="font-bold text-white">{challenge.executive} ({challenge.role}): </span>
                         <span className="text-slate-300">{challenge.zawadiWhisper}</span>
@@ -720,7 +717,7 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
                   {confidenceScore}%
                 </p>
                 <p className="text-[11px] text-slate-400">
-                  {isApproved ? 'Panel threshold exceeded (≥70%)' : 'Minimum 70% required to graduate'}
+                  {isApproved ? 'Panel threshold exceeded (>=70%)' : 'Minimum 70% required to graduate'}
                 </p>
               </div>
 
@@ -746,7 +743,7 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
             {isApproved && (
               <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-3 text-left">
                 <span className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
+                  <Sparkles className="w-4 h-4 text-amber-400"/>
                   Badges &amp; Credentials Unlocked
                 </span>
                 <div className="flex flex-wrap gap-2">
@@ -784,7 +781,7 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
                 onClick={onRestart}
                 className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition flex items-center justify-center gap-2 cursor-pointer"
               >
-                <RotateCcw className="w-4 h-4" /> Restart Entire Simulation Track
+                <RotateCcw className="w-4 h-4"/> Restart Entire Simulation Track
               </button>
 
               {!isApproved ? (
@@ -792,7 +789,7 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
                   onClick={handleReviseMissed}
                   className="w-full sm:w-auto px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-amber-500/20"
                 >
-                  <RefreshCw className="w-4 h-4" />
+                  <RefreshCw className="w-4 h-4"/>
                   <span>Revise Suboptimal Arguments ({missedChallenges.length} Missed)</span>
                 </button>
               ) : (
@@ -812,4 +809,6 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
       </div>
     </div>
   );
-};
+}
+
+export default ScreenBoardroomDefense;
