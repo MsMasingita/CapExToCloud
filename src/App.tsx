@@ -9,13 +9,44 @@ import { ScreenBoardroomDefense } from './components/ScreenBoardroomDefense';
 import { ScreenGraduationTransfer } from './components/ScreenGraduationTransfer';
 import ResourceDrawer from './ResourceDrawer';
 import { Zap, BookOpen } from 'lucide-react';
+import {
+  EDUBRIDGE_BOARD_CHALLENGES,
+  EDUBRIDGE_DECISION_DATA,
+  EDUBRIDGE_STUDY_LAB_UNITS,
+  EDUBRIDGE_PANIC_MATCHER_DATA,
+  EDUBRIDGE_PROPOSAL_DATA,
+} from './data/eduBridgeData';
+
+export type DomainId = 'solespace' | 'afrihealth' | 'edubridge';
 
 export function App() {
   const [currentScreen, setCurrentScreen] = useState<
     'onboarding' | 'briefing' | 'decision' | 'studylab' | 'glossary' | 'proposal' | 'defense' | 'transfer'
   >('onboarding');
+  const [activeDomain, setActiveDomain] = useState<DomainId>('solespace');
   const [xp, setXp] = useState(50);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const getDomainLabel = (domain: DomainId) => {
+    switch (domain) {
+      case 'edubridge':
+        return 'EduBridge Academy Track (Domain 3)';
+      case 'afrihealth':
+        return 'AfriHealth Track (Domain 2)';
+      case 'solespace':
+      default:
+        return 'SoleSpace Track (Domain 1)';
+    }
+  };
+
+  // Helper casts to allow passing optional domain datasets without breaking existing component interfaces
+  const BriefingComp = ScreenBriefing as any;
+  const DecisionComp = ScreenDecision as any;
+  const StudyLabComp = ScreenStudyLab as any;
+  const GlossaryComp = ScreenGlossaryDeck as any;
+  const ProposalComp = ScreenProposalWorkspace as any;
+  const DefenseComp = ScreenBoardroomDefense as any;
+  const TransferComp = ScreenGraduationTransfer as any;
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-slate-950">
@@ -35,8 +66,20 @@ export function App() {
                   CapExTo<span className="text-emerald-400">Cloud</span>
                 </h1>
                 <span className="text-[10px] bg-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-md border border-slate-700">
-                  SoleSpace Track
+                  {getDomainLabel(activeDomain)}
                 </span>
+
+                {/* Dev Quick Selector: Easily test EduBridge locally without bypassing unlock gating */}
+                <select
+                  value={activeDomain}
+                  onChange={(e) => setActiveDomain(e.target.value as DomainId)}
+                  className="text-[10px] bg-slate-900 border border-slate-700 text-emerald-400 font-bold px-1.5 py-0.5 rounded cursor-pointer outline-none"
+                  title="Dev Track Switcher"
+                >
+                  <option value="solespace">SoleSpace (D1)</option>
+                  <option value="afrihealth">AfriHealth (D2)</option>
+                  <option value="edubridge">EduBridge (D3)</option>
+                </select>
               </div>
               <p className="text-xs text-slate-400 font-medium hidden sm:block">
                 Unofficial AZ-900 Companion • Interactive Scenario Engine
@@ -72,8 +115,9 @@ export function App() {
         )}
 
         {currentScreen === 'briefing' && (
-          <ScreenBriefing
+          <BriefingComp
             xp={xp}
+            domain={activeDomain}
             onProceed={() => {
               setXp((prev) => prev + 25);
               setCurrentScreen('decision');
@@ -82,9 +126,10 @@ export function App() {
         )}
 
         {currentScreen === 'decision' && (
-          <ScreenDecision
+          <DecisionComp
             xp={xp}
-            onNext={(points) => {
+            decisionData={activeDomain === 'edubridge' ? EDUBRIDGE_DECISION_DATA : undefined}
+            onNext={(points: number) => {
               setXp((prev) => prev + points);
               setCurrentScreen('studylab');
             }}
@@ -92,12 +137,13 @@ export function App() {
         )}
 
         {currentScreen === 'studylab' && (
-          <ScreenStudyLab
+          <StudyLabComp
             xp={xp}
+            studyUnits={activeDomain === 'edubridge' ? EDUBRIDGE_STUDY_LAB_UNITS : undefined}
             onBack={() => {
               setCurrentScreen('decision');
             }}
-            onProceed={(points) => {
+            onProceed={(points: number) => {
               setXp((prev) => prev + points);
               setCurrentScreen('glossary');
             }}
@@ -105,12 +151,13 @@ export function App() {
         )}
 
         {currentScreen === 'glossary' && (
-          <ScreenGlossaryDeck
+          <GlossaryComp
             xp={xp}
+            glossaryData={activeDomain === 'edubridge' ? EDUBRIDGE_PANIC_MATCHER_DATA : undefined}
             onBack={() => {
               setCurrentScreen('studylab');
             }}
-            onProceed={(earnedBonus) => {
+            onProceed={(earnedBonus: number) => {
               setXp((prev) => prev + earnedBonus);
               setCurrentScreen('proposal');
             }}
@@ -118,12 +165,13 @@ export function App() {
         )}
 
         {currentScreen === 'proposal' && (
-          <ScreenProposalWorkspace
+          <ProposalComp
             xp={xp}
+            proposalData={activeDomain === 'edubridge' ? EDUBRIDGE_PROPOSAL_DATA : undefined}
             onBack={() => {
               setCurrentScreen('glossary');
             }}
-            onProceed={(earnedBonus) => {
+            onProceed={(earnedBonus: number) => {
               setXp((prev) => prev + earnedBonus);
               setCurrentScreen('defense');
             }}
@@ -131,8 +179,9 @@ export function App() {
         )}
 
         {currentScreen === 'defense' && (
-          <ScreenBoardroomDefense
+          <DefenseComp
             xp={xp}
+            challenges={activeDomain === 'edubridge' ? EDUBRIDGE_BOARD_CHALLENGES : undefined}
             onBack={() => {
               setCurrentScreen('proposal');
             }}
@@ -148,8 +197,14 @@ export function App() {
         )}
 
         {currentScreen === 'transfer' && (
-          <ScreenGraduationTransfer
+          <TransferComp
             xp={xp}
+            domain={activeDomain}
+            videoSrc={
+              activeDomain === 'edubridge'
+                ? '/videos/zawadi-domain3-complete.mp4'
+                : '/videos/zawadi-transfer.mp4'
+            }
             onBack={() => {
               setCurrentScreen('defense');
             }}
