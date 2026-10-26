@@ -4,9 +4,10 @@ import { ArrowRight, Building2, UserCheck, Zap, ShieldCheck, Database, Sparkles,
 
 interface ScreenOnboardingProps {
   onAcceptTrack: () => void;
+  onSelectAfriHealthTrack?: () => void;
 }
 
-export const ScreenOnboarding: React.FC<ScreenOnboardingProps> = ({ onAcceptTrack }) => {
+export const ScreenOnboarding: React.FC<ScreenOnboardingProps> = ({ onAcceptTrack, onSelectAfriHealthTrack }) => {
   const [nameInput, setNameInput] = useState('');
   const [internName, setInternName] = useState('');
   const [isGenerated, setIsGenerated] = useState(false);
@@ -252,18 +253,21 @@ export const ScreenOnboarding: React.FC<ScreenOnboardingProps> = ({ onAcceptTrac
             </button>
           </div>
 
-          {/* TRACK 2 */}
-          <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6 space-y-4 opacity-75">
+          {/* TRACK 2: AFRIHEALTH TELEMED (DOMAIN 2 - UNLOCKED) */}
+          <div className="bg-slate-900/90 border-2 border-teal-500/80 hover:border-teal-400 rounded-2xl p-6 space-y-4 shadow-2xl transition group">
             <div className="flex items-center justify-between">
-              <Database className="w-5 h-5 text-slate-500" />
-              <span className="px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 text-xs font-bold border border-slate-700">Locked • Domain 2</span>
+              <Database className="w-6 h-6 text-teal-400" />
+              <span className="px-2.5 py-1 rounded-full bg-teal-500/10 text-teal-400 text-xs font-bold border border-teal-500/30">Domain 2 • Available</span>
             </div>
-            <h3 className="text-lg font-bold text-slate-300">AfriHealth Telemed</h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Healthcare Data Residency &amp; Hybrid Cloud Migration. Unlocks after Domain 1 completion.
+            <h3 className="text-xl font-bold text-white group-hover:text-teal-400 transition-colors">AfriHealth Telemed</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Healthcare Data Residency &amp; Hybrid Cloud Migration. Configure LRS/GZRS storage tiers and regional compliance.
             </p>
-            <button disabled className="w-full py-3 rounded-xl bg-slate-800 text-slate-500 font-semibold text-xs cursor-not-allowed">
-              Locked
+            <button
+              onClick={onSelectAfriHealthTrack}
+              className="w-full py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-teal-500/20"
+            >
+              Launch AfriHealth Track (Domain 2) <ArrowRight className="w-4 h-4" />
             </button>
           </div>
 

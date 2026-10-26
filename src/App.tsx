@@ -7,10 +7,11 @@ import { ScreenGlossaryDeck } from './components/ScreenGlossaryDeck';
 import { ScreenProposalWorkspace } from './components/ScreenProposalWorkspace';
 import ScreenBoardroomDefense from './components/ScreenBoardroomDefense';
 import { ScreenGraduationTransfer } from './components/ScreenGraduationTransfer';
+import { ScreenAfriHealthDomain2 } from './components/ScreenAfriHealthDomain2';
 import ResourceDrawer from './ResourceDrawer';
 import { Zap, BookOpen } from 'lucide-react';
 
-type ScreenType = 'onboarding' | 'decision' | 'studylab' | 'glossary' | 'proposal' | 'defense' | 'transfer';
+type ScreenType = 'onboarding' | 'decision' | 'studylab' | 'glossary' | 'proposal' | 'defense' | 'transfer' | 'afrihealth';
 
 const STORAGE_KEY = 'capextocloud_state_v1';
 
@@ -47,7 +48,7 @@ export function App() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ currentScreen, xp }));
   }, [currentScreen, xp]);
 
-  // Screen sequence without briefing
+  // Screen sequence
   const screenSequence: ScreenType[] = [
     'onboarding',
     'decision',
@@ -55,13 +56,16 @@ export function App() {
     'glossary',
     'proposal',
     'defense',
-    'transfer'
+    'transfer',
+    'afrihealth'
   ];
 
   const handleBack = () => {
     const currentIndex = screenSequence.indexOf(currentScreen);
     if (currentIndex > 0) {
       setCurrentScreen(screenSequence[currentIndex - 1]);
+    } else {
+      setCurrentScreen('onboarding');
     }
   };
 
@@ -89,7 +93,7 @@ export function App() {
                     CapExTo<span className="text-emerald-400">Cloud</span>
                   </h1>
                   <span className="text-[10px] bg-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-md border border-slate-700">
-                    SoleSpace Track
+                    {currentScreen === 'afrihealth' ? 'AfriHealth Track (Domain 2)' : 'SoleSpace Track (Domain 1)'}
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 font-medium hidden sm:block">
@@ -157,6 +161,7 @@ export function App() {
         {currentScreen === 'onboarding' && (
           <ScreenOnboarding
             onAcceptTrack={() => setCurrentScreen('decision')}
+            onSelectAfriHealthTrack={() => setCurrentScreen('afrihealth')}
           />
         )}
 
@@ -220,6 +225,17 @@ export function App() {
             xp={xp}
             onBack={() => setCurrentScreen('defense')}
             onRestart={handleResetDemo}
+          />
+        )}
+
+        {currentScreen === 'afrihealth' && (
+          <ScreenAfriHealthDomain2
+            xp={xp}
+            onBack={() => setCurrentScreen('onboarding')}
+            onCompleteDomain2={() => {
+              setXp((prev) => prev + 100);
+              setCurrentScreen('onboarding');
+            }}
           />
         )}
       </main>
