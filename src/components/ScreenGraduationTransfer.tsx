@@ -11,16 +11,22 @@ import {
   ShieldCheck, 
   CheckCircle2,
   Sparkles,
-  Lock
+  ArrowRight
 } from 'lucide-react';
 
 export interface ScreenGraduationTransferProps {
   xp: number;
   onBack: () => void;
   onRestart: () => void;
+  onLaunchDomain2?: () => void;
 }
 
-export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> = ({ xp, onBack, onRestart }) => {
+export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> = ({ 
+  xp, 
+  onBack, 
+  onRestart,
+  onLaunchDomain2 
+}) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [videoEnded, setVideoEnded] = useState<boolean>(false);
 
@@ -147,7 +153,7 @@ export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> =
               </div>
               <div className="flex justify-between border-b border-slate-800 pb-2">
                 <span className="text-slate-400">Assigned Next Entity:</span>
-                <span className="font-medium text-amber-400">Kipaji Logistics Enterprise Cloud</span>
+                <span className="font-medium text-teal-400">AfriHealth Telemed</span>
               </div>
 
               <p className="pt-2 text-slate-400 italic leading-relaxed text-[11px]">
@@ -164,22 +170,22 @@ export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> =
             </div>
           </div>
 
-          {/* Module 2 Roadmap (Locked MVP State) */}
-          <div className="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-5">
+          {/* Module 2 Roadmap (Unlocked Domain 2) */}
+          <div className="lg:col-span-7 bg-slate-900 border border-teal-500/40 rounded-2xl p-6 shadow-2xl space-y-5">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <Layers className="w-5 h-5 text-emerald-400" />
+                <Layers className="w-5 h-5 text-teal-400" />
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                       Next Milestone • Domain 2
                     </span>
-                    <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center gap-1">
-                      <Lock className="w-2.5 h-2.5" /> Coming Soon (MVP Locked)
+                    <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/40 flex items-center gap-1">
+                      <Sparkles className="w-2.5 h-2.5" /> Domain 2 Unlocked
                     </span>
                   </div>
                   <h3 className="text-base font-bold text-white">
-                    Describe Azure Architecture and Services
+                    Describe Azure Architecture and Services (AfriHealth Telemed)
                   </h3>
                 </div>
               </div>
@@ -189,11 +195,11 @@ export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> =
             </div>
 
             <p className="text-xs text-slate-300 leading-relaxed">
-              You have mastered foundational cloud concepts. In the upcoming release, your deployment at <strong className="text-white">Kipaji Logistics Enterprise Cloud</strong> unlocks hands-on architectural blueprints across three core areas:
+              You have mastered foundational cloud concepts. Your deployment at <strong className="text-teal-400">AfriHealth Telemed</strong> unlocks hands-on architectural blueprints across three core areas:
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 space-y-1.5 opacity-80">
+              <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 space-y-1.5">
                 <div className="flex items-center gap-1.5 text-sky-400 text-xs font-bold">
                   <Globe2 className="w-4 h-4" /> Global Regions
                 </div>
@@ -202,7 +208,7 @@ export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> =
                 </p>
               </div>
 
-              <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 space-y-1.5 opacity-80">
+              <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 space-y-1.5">
                 <div className="flex items-center gap-1.5 text-emerald-400 text-xs font-bold">
                   <Server className="w-4 h-4" /> Compute &amp; Net
                 </div>
@@ -211,7 +217,7 @@ export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> =
                 </p>
               </div>
 
-              <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 space-y-1.5 opacity-80">
+              <div className="bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 space-y-1.5">
                 <div className="flex items-center gap-1.5 text-amber-400 text-xs font-bold">
                   <ShieldCheck className="w-4 h-4" /> Hierarchy
                 </div>
@@ -225,15 +231,20 @@ export const ScreenGraduationTransfer: React.FC<ScreenGraduationTransferProps> =
             <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
               <button
                 onClick={onRestart}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                className="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition flex items-center justify-center gap-2 cursor-pointer shadow-md"
               >
-                <RotateCcw className="w-4 h-4" /> Replay CapExToCloud Track
+                <RotateCcw className="w-4 h-4" /> Return to Desk
               </button>
 
-              <div className="w-full sm:flex-1 px-5 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-400 text-xs font-semibold flex items-center justify-center gap-2 cursor-not-allowed select-none">
-                <Lock className="w-3.5 h-3.5 text-amber-400" />
-                <span>Module 2: Unlocks in Next Release</span>
-              </div>
+              {onLaunchDomain2 && (
+                <button
+                  onClick={onLaunchDomain2}
+                  className="w-full sm:flex-1 px-6 py-3 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-lg shadow-teal-500/20 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span>Launch Domain 2: AfriHealth Telemed</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
 

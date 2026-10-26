@@ -10,13 +10,13 @@ interface ScreenOnboardingProps {
   domain2Completed: boolean;
 }
 
-export const ScreenOnboarding: React.FC<ScreenOnboardingProps> = ({ 
+export function ScreenOnboarding({ 
   onAcceptTrack, 
   onSelectAfriHealthTrack, 
   onSelectEduBridgeTrack,
   domain1Completed,
   domain2Completed
-}) => {
+}: ScreenOnboardingProps) {
   const [nameInput, setNameInput] = useState('');
   const [internName, setInternName] = useState('');
   const [isGenerated, setIsGenerated] = useState(false);
@@ -266,7 +266,7 @@ export const ScreenOnboarding: React.FC<ScreenOnboardingProps> = ({
             <div className="flex items-center justify-between">
               <Building2 className="w-6 h-6 text-emerald-400" />
               <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${domain1Completed ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'}`}>
-                {domain1Completed ? 'Domain 1 • Completed ✓' : 'Active Track'}
+                {domain1Completed ? 'Domain 1 Completed' : 'Active Track'}
               </span>
             </div>
             <h3 className="text-xl font-bold text-white">SoleSpace E-Commerce</h3>
@@ -286,7 +286,7 @@ export const ScreenOnboarding: React.FC<ScreenOnboardingProps> = ({
             <div className="flex items-center justify-between">
               <Database className={`w-6 h-6 ${domain1Completed ? 'text-teal-400' : 'text-slate-500'}`} />
               <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${domain1Completed ? (domain2Completed ? 'bg-teal-500/20 text-teal-300 border-teal-500/40' : 'bg-teal-500/10 text-teal-400 border-teal-500/30') : 'bg-slate-800 text-slate-400 border-slate-700'}`}>
-                {domain1Completed ? (domain2Completed ? 'Domain 2 • Completed ✓' : 'Domain 2 • Unlocked') : 'Locked'}
+                {domain1Completed ? (domain2Completed ? 'Domain 2 Completed' : 'Domain 2 Unlocked') : 'Locked'}
               </span>
             </div>
             <h3 className={`text-xl font-bold ${domain1Completed ? 'text-white' : 'text-slate-300'}`}>AfriHealth Telemed</h3>
@@ -302,7 +302,7 @@ export const ScreenOnboarding: React.FC<ScreenOnboardingProps> = ({
               </button>
             ) : (
               <button
-                onClick={() => setLockNotice(" AfriHealth Telemed is locked! You must complete Domain 1 (SoleSpace E-Commerce) and pass the Boardroom Defense quiz first.")}
+                onClick={() => setLockNotice("AfriHealth Telemed is locked! You must complete Domain 1 (SoleSpace E-Commerce) and pass the Boardroom Defense quiz first.")}
                 className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition cursor-pointer flex items-center justify-center gap-2 border border-slate-700"
               >
                 <Lock className="w-3.5 h-3.5 text-amber-400" /> Locked • Why is this locked?
@@ -315,7 +315,7 @@ export const ScreenOnboarding: React.FC<ScreenOnboardingProps> = ({
             <div className="flex items-center justify-between">
               <ShieldCheck className={`w-6 h-6 ${domain2Completed ? 'text-purple-400' : 'text-slate-500'}`} />
               <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${domain2Completed ? 'bg-purple-500/10 text-purple-400 border-purple-500/30' : 'bg-slate-800 text-slate-400 border-slate-700'}`}>
-                {domain2Completed ? 'Domain 3 • Unlocked' : 'Locked'}
+                {domain2Completed ? 'Domain 3 Unlocked' : 'Locked'}
               </span>
             </div>
             <h3 className={`text-xl font-bold ${domain2Completed ? 'text-white' : 'text-slate-300'}`}>EduBridge Academy</h3>
@@ -331,7 +331,7 @@ export const ScreenOnboarding: React.FC<ScreenOnboardingProps> = ({
               </button>
             ) : (
               <button
-                onClick={() => setLockNotice(" EduBridge Academy is locked! You must first complete Domain 2 (AfriHealth Telemed).")}
+                onClick={() => setLockNotice("EduBridge Academy is locked! You must first complete Domain 2 (AfriHealth Telemed).")}
                 className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition cursor-pointer flex items-center justify-center gap-2 border border-slate-700"
               >
                 <Lock className="w-3.5 h-3.5 text-amber-400" /> Locked • Why is this locked?
@@ -344,6 +344,6 @@ export const ScreenOnboarding: React.FC<ScreenOnboardingProps> = ({
 
     </div>
   );
-};
+}
 
 export default ScreenOnboarding;

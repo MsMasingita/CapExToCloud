@@ -1,6 +1,6 @@
 // src/App.tsx
 import { useState, useEffect } from 'react';
-import { ScreenOnboarding } from './components/ScreenOnboarding';
+import ScreenOnboarding from './components/ScreenOnboarding';
 import { ScreenDecision } from './components/ScreenDecision';
 import { ScreenStudyLab } from './components/ScreenStudyLab';
 import { ScreenGlossaryDeck } from './components/ScreenGlossaryDeck';
@@ -8,10 +8,21 @@ import { ScreenProposalWorkspace } from './components/ScreenProposalWorkspace';
 import ScreenBoardroomDefense from './components/ScreenBoardroomDefense';
 import { ScreenGraduationTransfer } from './components/ScreenGraduationTransfer';
 import { ScreenAfriHealthDomain2 } from './components/ScreenAfriHealthDomain2';
+import { ScreenAfriHealthGraduationTransfer } from './components/ScreenAfriHealthGraduationTransfer';
 import ResourceDrawer from './ResourceDrawer';
 import { Zap, BookOpen } from 'lucide-react';
 
-type ScreenType = 'onboarding' | 'decision' | 'studylab' | 'glossary' | 'proposal' | 'defense' | 'transfer' | 'afrihealth' | 'edubridge';
+type ScreenType = 
+  | 'onboarding' 
+  | 'decision' 
+  | 'studylab' 
+  | 'glossary' 
+  | 'proposal' 
+  | 'defense' 
+  | 'transfer' 
+  | 'afrihealth' 
+  | 'afrihealth-transfer' 
+  | 'edubridge';
 
 const STORAGE_KEY = 'capextocloud_state_v1';
 
@@ -70,7 +81,7 @@ export function App() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ currentScreen, xp, domain1Completed, domain2Completed }));
   }, [currentScreen, xp, domain1Completed, domain2Completed]);
 
-  // Screen sequence
+  // Screen sequence for standard back navigation
   const screenSequence: ScreenType[] = [
     'onboarding',
     'decision',
@@ -80,6 +91,7 @@ export function App() {
     'defense',
     'transfer',
     'afrihealth',
+    'afrihealth-transfer',
     'edubridge'
   ];
 
@@ -92,11 +104,7 @@ export function App() {
     }
   };
 
-  const handleResetDemo = () => {
-    localStorage.removeItem(STORAGE_KEY);
-    setXp(50);
-    setDomain1Completed(false);
-    setDomain2Completed(false);
+  const handleReturnToDesk = () => {
     setCurrentScreen('onboarding');
   };
 
@@ -118,7 +126,11 @@ export function App() {
                     CapExTo<span className="text-emerald-400">Cloud</span>
                   </h1>
                   <span className="text-[10px] bg-slate-800 text-slate-300 font-semibold px-2 py-0.5 rounded-md border border-slate-700">
-                    {currentScreen === 'afrihealth' ? 'AfriHealth Track (Domain 2)' : currentScreen === 'edubridge' ? 'EduBridge Track (Domain 3)' : 'SoleSpace Track (Domain 1)'}
+                    {currentScreen === 'afrihealth' || currentScreen === 'afrihealth-transfer' 
+                      ? 'AfriHealth Track (Domain 2)' 
+                      : currentScreen === 'edubridge' 
+                      ? 'EduBridge Track (Domain 3)' 
+                      : 'SoleSpace Track (Domain 1)'}
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 font-medium hidden sm:block">
@@ -137,7 +149,7 @@ export function App() {
                 </button>
 
                 <button
-                  onClick={handleResetDemo}
+                  onClick={handleReturnToDesk}
                   className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800/80 hover:bg-slate-700 hover:text-white rounded-lg transition border border-slate-700/50 cursor-pointer"
                 >
                   <span>Return to Desk</span>
@@ -156,7 +168,7 @@ export function App() {
                   <span>← Back</span>
                 </button>
                 <button
-                  onClick={handleResetDemo}
+                  onClick={handleReturnToDesk}
                   className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700/50 cursor-pointer"
                 >
                   <span>Desk</span>
@@ -193,7 +205,6 @@ export function App() {
             }}
             onSelectEduBridgeTrack={() => {
               if (domain2Completed) {
-                // Placeholder for Domain 3 screen or alert
                 alert('EduBridge Academy (Domain 3) scenario engine is ready to deploy!');
               }
             }}
@@ -247,7 +258,7 @@ export function App() {
           <ScreenBoardroomDefense
             xp={xp}
             onBack={() => setCurrentScreen('proposal')}
-            onRestart={handleResetDemo}
+            onRestart={handleReturnToDesk}
             onProceedToTransfer={() => {
               setDomain1Completed(true);
               setXp((prev) => prev + 250);
@@ -260,7 +271,8 @@ export function App() {
           <ScreenGraduationTransfer
             xp={xp}
             onBack={() => setCurrentScreen('defense')}
-            onRestart={handleResetDemo}
+            onRestart={handleReturnToDesk}
+            onLaunchDomain2={() => setCurrentScreen('afrihealth')}
           />
         )}
 
@@ -271,7 +283,18 @@ export function App() {
             onCompleteDomain2={() => {
               setDomain2Completed(true);
               setXp((prev) => prev + 150);
-              setCurrentScreen('onboarding');
+              setCurrentScreen('afrihealth-transfer');
+            }}
+          />
+        )}
+
+        {currentScreen === 'afrihealth-transfer' && (
+          <ScreenAfriHealthGraduationTransfer
+            xp={xp}
+            onBack={() => setCurrentScreen('afrihealth')}
+            onRestart={handleReturnToDesk}
+            onLaunchDomain3={() => {
+              alert('EduBridge Academy (Domain 3) scenario engine is ready to deploy!');
             }}
           />
         )}
