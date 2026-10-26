@@ -13,7 +13,7 @@ import { Zap, BookOpen } from 'lucide-react';
 
 type ScreenType = 'onboarding' | 'decision' | 'studylab' | 'glossary' | 'proposal' | 'defense' | 'transfer' | 'afrihealth' | 'edubridge';
 
-const STORAGE_KEY = 'capextocloud_state_v2';
+const STORAGE_KEY = 'capextocloud_state_v1';
 
 export function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenType>(() => {
