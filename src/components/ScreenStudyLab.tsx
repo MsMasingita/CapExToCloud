@@ -16,6 +16,7 @@ import {
 
 interface ScreenStudyLabProps {
   xp: number;
+  studyUnits?: any[];
   onProceed: (earnedXp: number) => void;
   onBack?: () => void;
 }
@@ -43,7 +44,7 @@ interface StudyTopic {
   };
 }
 
-const STUDY_TOPICS: StudyTopic[] = [
+const DEFAULT_STUDY_TOPICS: StudyTopic[] = [
   {
     id: 1,
     title: '1. What is Cloud Computing?',
@@ -198,12 +199,54 @@ const STUDY_TOPICS: StudyTopic[] = [
   }
 ];
 
-export const ScreenStudyLab: React.FC<ScreenStudyLabProps> = ({ xp, onProceed, onBack }) => {
+export const ScreenStudyLab: React.FC<ScreenStudyLabProps> = ({ xp, studyUnits, onProceed, onBack }) => {
   const [activeTab, setActiveTab] = useState<number>(1);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, 'A' | 'B'>>({});
   const [completedTopics, setCompletedTopics] = useState<number[]>([]);
 
-  const currentTopic = STUDY_TOPICS.find((t) => t.id === activeTab) || STUDY_TOPICS[0];
+  // Dynamically map incoming studyUnits (like EduBridge) into the component's internal format
+  const activeTopics: StudyTopic[] = React.useMemo(() => {
+    if (!studyUnits || studyUnits.length === 0) {
+      return DEFAULT_STUDY_TOPICS;
+    }
+
+    const defaultIcons = [
+      <Server key="1" className="w-4 h-4 text-emerald-400" />,
+      <ShieldCheck key="2" className="w-4 h-4 text-teal-400" />,
+      <Layers key="3" className="w-4 h-4 text-blue-400" />,
+      <TrendingUp key="4" className="w-4 h-4 text-amber-400" />
+    ];
+
+    return studyUnits.map((u, idx) => ({
+      id: idx + 1,
+      title: `${u.unitNumber || `0${idx + 1}`}. ${u.title}`,
+      shortLabel: u.title.split('&')[0].trim(),
+      icon: defaultIcons[idx % defaultIcons.length],
+      professionalNotes: u.notes || '',
+      realWorldScenario: {
+        analogy: u.analogy || '',
+        incidentBridge: u.incidentBridge || ''
+      },
+      keyTerminology: (u.terms || []).map((t: any) => ({
+        term: t.name || t.term || '',
+        definition: t.definition || ''
+      })),
+      incidentLink: u.incidentBridge || '',
+      checkpoint: {
+        question: u.checkpoint?.question || '',
+        options: (u.checkpoint?.options || []).map((opt: any) => ({
+          id: opt.id as 'A' | 'B',
+          text: opt.text,
+          isCorrect: !!opt.isCorrect,
+          feedback: opt.isCorrect
+            ? 'Correct! Accurate application of Azure governance and security architecture.'
+            : 'Incorrect. Review the governance guidelines and re-evaluate the risk.'
+        }))
+      }
+    }));
+  }, [studyUnits]);
+
+  const currentTopic = activeTopics.find((t) => t.id === activeTab) || activeTopics[0];
 
   const handleSelectOption = (topicId: number, optionId: 'A' | 'B') => {
     setSelectedAnswers((prev) => ({ ...prev, [topicId]: optionId }));
@@ -213,7 +256,8 @@ export const ScreenStudyLab: React.FC<ScreenStudyLabProps> = ({ xp, onProceed, o
     }
   };
 
-  const allCompleted = completedTopics.length === STUDY_TOPICS.length;
+  const allCompleted = completedTopics.length === activeTopics.length;
+  const isEduBridge = studyUnits && studyUnits.length > 0;
 
   return (
     <div className="min-h-screen bg-[#0F172A] text-slate-100 p-4 md:p-8 font-sans">
@@ -228,7 +272,7 @@ export const ScreenStudyLab: React.FC<ScreenStudyLabProps> = ({ xp, onProceed, o
                 className="flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-emerald-400 transition cursor-pointer group"
               >
                 <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-                <span>Back to Decision Simulation</span>
+                <span>Back to Strategic Decision</span>
               </button>
             )}
 
@@ -237,7 +281,9 @@ export const ScreenStudyLab: React.FC<ScreenStudyLabProps> = ({ xp, onProceed, o
                 <span className="text-[11px] font-bold tracking-wider uppercase text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">
                   Stage 2: Technical Desk Briefing
                 </span>
-                <span className="text-xs text-slate-400 font-medium">Domain 1: Cloud Concepts</span>
+                <span className="text-xs text-slate-400 font-medium">
+                  {isEduBridge ? 'Domain 3: Governance, Security & Management' : 'Domain 1: Cloud Concepts'}
+                </span>
               </div>
               <h2 className="text-2xl font-black tracking-tight text-white">
                 Intern Study Lab: Mastering AZ-900 Core Architecture
@@ -261,7 +307,9 @@ export const ScreenStudyLab: React.FC<ScreenStudyLabProps> = ({ xp, onProceed, o
                 Intern Operational Assignment
               </p>
               <p className="text-sm text-slate-300 leading-relaxed">
-                You are tasked with preparing an executive proposal demonstrating how Cloud services will resolve SoleSpace&apos;s recurring server crashes. Before stepping into the boardroom defense, you must master the 4 core AZ-900 syllabus units below and validate your understanding at each diagnostic checkpoint.
+                {isEduBridge
+                  ? 'Master the 4 core Azure Governance, Policy, and Security modules below. Complete each diagnostic checkpoint to prepare your Pan-African Governance Charter for the Boardroom Defense.'
+                  : "You are tasked with preparing an executive proposal demonstrating how Cloud services will resolve SoleSpace's recurring server crashes. Before stepping into the boardroom defense, you must master the 4 core AZ-900 syllabus units below and validate your understanding at each diagnostic checkpoint."}
               </p>
             </div>
           </div>
@@ -269,7 +317,7 @@ export const ScreenStudyLab: React.FC<ScreenStudyLabProps> = ({ xp, onProceed, o
 
         {/* Topic Switcher Navigation Tabs */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {STUDY_TOPICS.map((topic) => {
+          {activeTopics.map((topic) => {
             const isActive = activeTab === topic.id;
             const isCompleted = completedTopics.includes(topic.id);
 
@@ -307,7 +355,7 @@ export const ScreenStudyLab: React.FC<ScreenStudyLabProps> = ({ xp, onProceed, o
               {currentTopic.title}
             </h3>
             <span className="text-xs text-slate-400">
-              Module Completion: <span className="text-emerald-400 font-bold">{completedTopics.length}</span>/4
+              Module Completion: <span className="text-emerald-400 font-bold">{completedTopics.length}</span>/{activeTopics.length}
             </span>
           </div>
 
@@ -332,7 +380,12 @@ export const ScreenStudyLab: React.FC<ScreenStudyLabProps> = ({ xp, onProceed, o
             </div>
             <div className="space-y-2 text-xs text-slate-300 leading-relaxed">
               <p><strong className="text-slate-100">Analogy:</strong> {currentTopic.realWorldScenario.analogy}</p>
-              <p className="text-emerald-300"><strong className="text-emerald-200">SoleSpace Incident Bridge:</strong> {currentTopic.realWorldScenario.incidentBridge}</p>
+              <p className="text-emerald-300">
+                <strong className="text-emerald-200">
+                  {isEduBridge ? 'EduBridge Incident Bridge:' : 'SoleSpace Incident Bridge:'}
+                </strong>{' '}
+                {currentTopic.realWorldScenario.incidentBridge}
+              </p>
             </div>
           </div>
 
@@ -427,7 +480,7 @@ export const ScreenStudyLab: React.FC<ScreenStudyLabProps> = ({ xp, onProceed, o
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-800">
           <div className="text-xs text-slate-400 flex items-center gap-2">
             <Lightbulb className="w-4 h-4 text-amber-400" />
-            <span>Complete all 4 checkpoints to unlock the Boardroom Proposal Workspace.</span>
+            <span>Complete all {activeTopics.length} checkpoints to unlock the Boardroom Proposal Workspace.</span>
           </div>
 
           <button

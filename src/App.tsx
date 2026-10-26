@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ScreenOnboarding } from './components/ScreenOnboarding';
 import { ScreenBriefing } from './components/ScreenBriefing';
 import { ScreenDecision } from './components/ScreenDecision';
+import { ScreenDecisionEduBridge } from './components/ScreenDecisionEduBridge';
 import { ScreenStudyLab } from './components/ScreenStudyLab';
 import { ScreenGlossaryDeck } from './components/ScreenGlossaryDeck';
 import { ScreenProposalWorkspace } from './components/ScreenProposalWorkspace';
@@ -11,7 +12,6 @@ import ResourceDrawer from './ResourceDrawer';
 import { Zap, BookOpen } from 'lucide-react';
 import {
   EDUBRIDGE_BOARD_CHALLENGES,
-  EDUBRIDGE_DECISION_DATA,
   EDUBRIDGE_STUDY_LAB_UNITS,
   EDUBRIDGE_PANIC_MATCHER_DATA,
   EDUBRIDGE_PROPOSAL_DATA,
@@ -39,7 +39,6 @@ export function App() {
     }
   };
 
-  // Helper casts to allow passing optional domain datasets without breaking existing component interfaces
   const BriefingComp = ScreenBriefing as any;
   const DecisionComp = ScreenDecision as any;
   const StudyLabComp = ScreenStudyLab as any;
@@ -69,7 +68,7 @@ export function App() {
                   {getDomainLabel(activeDomain)}
                 </span>
 
-                {/* Dev Quick Selector: Switching domain immediately resets screen to 'briefing' */}
+                {/* Dev Quick Selector */}
                 <select
                   value={activeDomain}
                   onChange={(e) => {
@@ -122,21 +121,31 @@ export function App() {
             xp={xp}
             domain={activeDomain}
             onProceed={() => {
-              setXp((prev) => prev + 25);
+              setXp((prev: number) => prev + 25);
               setCurrentScreen('decision');
             }}
           />
         )}
 
         {currentScreen === 'decision' && (
-          <DecisionComp
-            xp={xp}
-            decisionData={activeDomain === 'edubridge' ? EDUBRIDGE_DECISION_DATA : undefined}
-            onNext={(points: number) => {
-              setXp((prev) => prev + points);
-              setCurrentScreen('studylab');
-            }}
-          />
+          activeDomain === 'edubridge' ? (
+            <ScreenDecisionEduBridge
+              xp={xp}
+              onNext={(points: number) => {
+                setXp((prev: number) => prev + points);
+                setCurrentScreen('studylab');
+              }}
+            />
+          ) : (
+            <DecisionComp
+              xp={xp}
+              decisionData={undefined}
+              onNext={(points: number) => {
+                setXp((prev: number) => prev + points);
+                setCurrentScreen('studylab');
+              }}
+            />
+          )
         )}
 
         {currentScreen === 'studylab' && (
@@ -147,7 +156,7 @@ export function App() {
               setCurrentScreen('decision');
             }}
             onProceed={(points: number) => {
-              setXp((prev) => prev + points);
+              setXp((prev: number) => prev + points);
               setCurrentScreen('glossary');
             }}
           />
@@ -161,7 +170,7 @@ export function App() {
               setCurrentScreen('studylab');
             }}
             onProceed={(earnedBonus: number) => {
-              setXp((prev) => prev + earnedBonus);
+              setXp((prev: number) => prev + earnedBonus);
               setCurrentScreen('proposal');
             }}
           />
@@ -175,7 +184,7 @@ export function App() {
               setCurrentScreen('glossary');
             }}
             onProceed={(earnedBonus: number) => {
-              setXp((prev) => prev + earnedBonus);
+              setXp((prev: number) => prev + earnedBonus);
               setCurrentScreen('defense');
             }}
           />
@@ -193,7 +202,7 @@ export function App() {
               setCurrentScreen('onboarding');
             }}
             onProceedToTransfer={() => {
-              setXp((prev) => prev + 250);
+              setXp((prev: number) => prev + 250);
               setCurrentScreen('transfer');
             }}
           />

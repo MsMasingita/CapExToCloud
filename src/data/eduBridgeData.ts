@@ -1,4 +1,6 @@
-// Self-contained interfaces matching ScreenBoardroomDefense structure
+// src/data/eduBridgeData.ts
+
+// Self-contained interfaces matching simulation structure
 export interface ExecutiveChallengeOption {
   id: string;
   text: string;
@@ -146,7 +148,7 @@ export const EDUBRIDGE_STUDY_LAB_UNITS = [
   }
 ];
 
-// 3. STAGE 4: BOARDROOM PANIC MATCHER (ScreenGlossaryDefinition.tsx)
+// 3. STAGE 4: BOARDROOM PANIC MATCHER (ScreenGlossaryDeck.tsx)
 export const EDUBRIDGE_PANIC_MATCHER_DATA = {
   concerns: [
     {

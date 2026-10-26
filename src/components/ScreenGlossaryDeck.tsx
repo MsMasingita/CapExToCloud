@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   Zap, 
   ArrowRight, 
@@ -14,11 +14,16 @@ import {
   CheckCircle2,
   HelpCircle,
   FileText,
-  RotateCcw
+  RotateCcw,
+  ShieldCheck,
+  Lock,
+  UserCheck,
+  DollarSign
 } from 'lucide-react';
 
 interface ScreenGlossaryDeckProps {
   xp: number;
+  glossaryData?: any;
   onProceed: (earnedXp: number) => void;
   onBack: () => void;
 }
@@ -43,7 +48,7 @@ interface BoardroomPanic {
   targetConceptId: string;
 }
 
-const CONCEPTS: ArchitecturalConcept[] = [
+const DEFAULT_CONCEPTS: ArchitecturalConcept[] = [
   {
     id: 'scalability',
     name: 'Scalability',
@@ -120,7 +125,7 @@ const CONCEPTS: ArchitecturalConcept[] = [
   }
 ];
 
-const BOARDROOM_PANICS: BoardroomPanic[] = [
+const DEFAULT_BOARDROOM_PANICS: BoardroomPanic[] = [
   {
     id: 'panic-1',
     speaker: 'Lerato',
@@ -172,14 +177,64 @@ const BOARDROOM_PANICS: BoardroomPanic[] = [
   }
 ];
 
-export const ScreenGlossaryDeck: React.FC<ScreenGlossaryDeckProps> = ({ xp, onProceed, onBack }) => {
+export const ScreenGlossaryDeck: React.FC<ScreenGlossaryDeckProps> = ({ xp, glossaryData, onProceed, onBack }) => {
+  const isCustomDomain = Boolean(glossaryData && glossaryData.concerns && glossaryData.remedies);
+
+  const { activeConcepts, activePanics } = useMemo(() => {
+    if (!isCustomDomain) {
+      return { activeConcepts: DEFAULT_CONCEPTS, activePanics: DEFAULT_BOARDROOM_PANICS };
+    }
+
+    const remedyIcons: Record<string, React.ReactNode> = {
+      'Azure Policy': <ShieldCheck className="w-5 h-5 text-emerald-400" />,
+      'Resource Locks': <Lock className="w-5 h-5 text-amber-400" />,
+      'Role-Based Access Control (RBAC)': <UserCheck className="w-5 h-5 text-teal-400" />,
+      'Budget Alerts & Quotas': <DollarSign className="w-5 h-5 text-purple-400" />
+    };
+
+    const concepts: ArchitecturalConcept[] = (glossaryData.remedies || []).map((r: any) => {
+      const slug = r.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+      return {
+        id: slug,
+        name: r.name,
+        category: r.category || 'Azure Governance',
+        icon: remedyIcons[r.name] || <ShieldCheck className="w-5 h-5 text-emerald-400" />,
+        accentColor: 'border-emerald-500/40 hover:border-emerald-500',
+        badgeBg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+        definition: r.description || '',
+        examTrap: r.trapNote || '',
+        executiveSlideLine: `Enforcing ${r.name} to establish automated governance and compliance.`
+      };
+    });
+
+    const panics: BoardroomPanic[] = (glossaryData.concerns || []).map((c: any) => {
+      // Find the concept whose name matches matchedRemedy
+      const target = concepts.find(
+        (cp) => cp.name.toLowerCase() === (c.matchedRemedy || '').toLowerCase()
+      );
+      const parts = (c.stakeholder || 'Stakeholder (Role)').split('(');
+      const speaker = parts[0].trim();
+      const role = parts[1] ? parts[1].replace(')', '').trim() : 'Executive';
+
+      return {
+        id: c.id,
+        speaker,
+        role,
+        quote: c.quote.startsWith('"') ? c.quote : `"${c.quote}"`,
+        targetConceptId: target ? target.id : ''
+      };
+    });
+
+    return { activeConcepts: concepts, activePanics: panics };
+  }, [glossaryData, isCustomDomain]);
+
   const [activePanicIndex, setActivePanicIndex] = useState<number>(0);
   const [matchedConceptIds, setMatchedConceptIds] = useState<string[]>([]);
   const [earnedBonusXp, setEarnedBonusXp] = useState<number>(0);
   const [feedback, setFeedback] = useState<{ message: string; isCorrect: boolean } | null>(null);
 
-  const currentPanic = BOARDROOM_PANICS[activePanicIndex];
-  const isAllComplete = matchedConceptIds.length === BOARDROOM_PANICS.length;
+  const currentPanic = activePanics[activePanicIndex];
+  const isAllComplete = matchedConceptIds.length === activePanics.length && activePanics.length > 0;
 
   const handleSelectConcept = (conceptId: string) => {
     if (!currentPanic || isAllComplete) return;
@@ -190,11 +245,11 @@ export const ScreenGlossaryDeck: React.FC<ScreenGlossaryDeckProps> = ({ xp, onPr
         setEarnedBonusXp((prev) => prev + 15);
       }
       setFeedback({
-        message: `Correct! "${currentPanic.speaker}"'s concern is directly solved by ${CONCEPTS.find(c => c.id === conceptId)?.name}. Pinned to slide deck!`,
+        message: `Correct! "${currentPanic.speaker}"'s concern is directly solved by ${activeConcepts.find(c => c.id === conceptId)?.name}. Pinned to slide deck!`,
         isCorrect: true
       });
 
-      const nextIndex = BOARDROOM_PANICS.findIndex(
+      const nextIndex = activePanics.findIndex(
         (p, idx) => idx > activePanicIndex && !matchedConceptIds.includes(p.targetConceptId)
       );
 
@@ -204,7 +259,7 @@ export const ScreenGlossaryDeck: React.FC<ScreenGlossaryDeckProps> = ({ xp, onPr
           setFeedback(null);
         }, 1200);
       } else {
-        const wrapIndex = BOARDROOM_PANICS.findIndex((p) => !matchedConceptIds.includes(p.targetConceptId) && p.targetConceptId !== conceptId);
+        const wrapIndex = activePanics.findIndex((p) => !matchedConceptIds.includes(p.targetConceptId) && p.targetConceptId !== conceptId);
         if (wrapIndex !== -1) {
           setTimeout(() => {
             setActivePanicIndex(wrapIndex);
@@ -247,7 +302,9 @@ export const ScreenGlossaryDeck: React.FC<ScreenGlossaryDeckProps> = ({ xp, onPr
                 <span className="text-[11px] font-bold tracking-wider uppercase text-sky-400 bg-sky-500/10 border border-sky-500/30 px-2.5 py-0.5 rounded-full">
                   Stage 4: Architectural Vocabulary &amp; Executive Deck
                 </span>
-                <span className="text-xs text-slate-400 font-medium">Domain 1: Cloud Concepts (Module 2)</span>
+                <span className="text-xs text-slate-400 font-medium">
+                  {isCustomDomain ? 'Domain 3: Governance, Security & Management' : 'Domain 1: Cloud Concepts (Module 2)'}
+                </span>
               </div>
               <h2 className="text-2xl font-black tracking-tight text-white">
                 The Boardroom Panic Matcher
@@ -280,10 +337,12 @@ export const ScreenGlossaryDeck: React.FC<ScreenGlossaryDeckProps> = ({ xp, onPr
             <HelpCircle className="w-5 h-5 text-sky-400 shrink-0 mt-0.5" />
             <div className="space-y-1">
               <p className="text-xs font-bold text-sky-400 uppercase tracking-wider">
-                Thandi&apos;s Strategy: Counter Each Panic With Official Architecture
+                {isCustomDomain ? 'Dean Ochieng\'s Directive: Address Every Leadership Concern' : 'Thandi\'s Strategy: Counter Each Panic With Official Architecture'}
               </p>
               <p className="text-sm text-slate-300 leading-relaxed">
-                SoleSpace&apos;s leadership is terrified of moving to the cloud. Read each stakeholder&apos;s real-world concern below, then click the correct AZ-900 architectural benefit to counter them. Each correct match adds <strong className="text-emerald-400">+15 XP</strong> and writes that capability into your live Executive Proposal Slide.
+                {isCustomDomain
+                  ? 'EduBridge stakeholders have urgent governance and compliance concerns across 12 countries. Match each stakeholder quote to its exact Azure governance remedy to assemble your Pan-African Governance slide.'
+                  : 'SoleSpace\'s leadership is terrified of moving to the cloud. Read each stakeholder\'s real-world concern below, then click the correct AZ-900 architectural benefit to counter them. Each correct match adds +15 XP and writes that capability into your live Executive Proposal Slide.'}
               </p>
             </div>
           </div>
@@ -301,7 +360,7 @@ export const ScreenGlossaryDeck: React.FC<ScreenGlossaryDeckProps> = ({ xp, onPr
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse" />
                     <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
-                      Incoming Concern #{activePanicIndex + 1} of {BOARDROOM_PANICS.length}
+                      Incoming Concern #{activePanicIndex + 1} of {activePanics.length}
                     </span>
                   </div>
                   <span className="text-xs font-medium text-slate-400">
@@ -329,9 +388,11 @@ export const ScreenGlossaryDeck: React.FC<ScreenGlossaryDeckProps> = ({ xp, onPr
             ) : (
               <div className="bg-emerald-950/30 border border-emerald-500/40 rounded-2xl p-6 text-center space-y-2">
                 <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
-                <h3 className="text-lg font-bold text-white">All 7 Leadership Concerns Neutralized!</h3>
+                <h3 className="text-lg font-bold text-white">All {activePanics.length} Leadership Concerns Neutralized!</h3>
                 <p className="text-xs text-slate-300 max-w-md mx-auto">
-                  You have successfully connected every SoleSpace operational challenge to its foundational AZ-900 cloud architecture benefit. Your executive proposal slide is fully armed.
+                  {isCustomDomain
+                    ? 'You have addressed all data sovereignty, deletion risk, credential sprawl, and runaway cost panics. Your governance slide is complete!'
+                    : 'You have successfully connected every SoleSpace operational challenge to its foundational AZ-900 cloud architecture benefit. Your executive proposal slide is fully armed.'}
                 </p>
               </div>
             )}
@@ -342,7 +403,7 @@ export const ScreenGlossaryDeck: React.FC<ScreenGlossaryDeckProps> = ({ xp, onPr
                 Select the Matching Architectural Remedy:
               </p>
 
-              {CONCEPTS.map((concept) => {
+              {activeConcepts.map((concept) => {
                 const isMatched = matchedConceptIds.includes(concept.id);
 
                 return (
@@ -414,7 +475,7 @@ export const ScreenGlossaryDeck: React.FC<ScreenGlossaryDeckProps> = ({ xp, onPr
                   </h3>
                 </div>
                 <span className="text-xs font-mono text-emerald-400 font-bold">
-                  {matchedConceptIds.length} / 7 Provisions
+                  {matchedConceptIds.length} / {activePanics.length} Provisions
                 </span>
               </div>
 
@@ -424,7 +485,9 @@ export const ScreenGlossaryDeck: React.FC<ScreenGlossaryDeckProps> = ({ xp, onPr
                   <div className="border-b border-slate-800/80 pb-2">
                     <p className="text-[10px] text-sky-400 font-mono uppercase tracking-wider">Proposal Slide #2</p>
                     <h4 className="text-sm font-black text-white">
-                      SoleSpace Architecture Modernization: Cloud Value Map
+                      {isCustomDomain
+                        ? 'EduBridge Academy: Pan-African Cloud Governance Map'
+                        : 'SoleSpace Architecture Modernization: Cloud Value Map'}
                     </h4>
                   </div>
 
@@ -438,7 +501,7 @@ export const ScreenGlossaryDeck: React.FC<ScreenGlossaryDeckProps> = ({ xp, onPr
                     </div>
                   ) : (
                     <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1">
-                      {CONCEPTS.filter((c) => matchedConceptIds.includes(c.id)).map((c) => (
+                      {activeConcepts.filter((c) => matchedConceptIds.includes(c.id)).map((c) => (
                         <div key={c.id} className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1">
                           <div className="flex items-center justify-between text-xs">
                             <span className="font-bold text-white flex items-center gap-1.5">
@@ -459,12 +522,16 @@ export const ScreenGlossaryDeck: React.FC<ScreenGlossaryDeckProps> = ({ xp, onPr
                 <div className="space-y-1.5 pt-3 border-t border-slate-800/80">
                   <div className="flex justify-between text-[11px] text-slate-400">
                     <span>Executive Slide Readiness</span>
-                    <span className="font-bold text-white">{Math.round((matchedConceptIds.length / 7) * 100)}%</span>
+                    <span className="font-bold text-white">
+                      {activePanics.length > 0 ? Math.round((matchedConceptIds.length / activePanics.length) * 100) : 0}%
+                    </span>
                   </div>
                   <div className="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800">
                     <div
                       className="bg-emerald-500 h-full transition-all duration-300"
-                      style={{ width: `${(matchedConceptIds.length / 7) * 100}%` }}
+                      style={{
+                        width: `${activePanics.length > 0 ? (matchedConceptIds.length / activePanics.length) * 100 : 0}%`
+                      }}
                     />
                   </div>
                 </div>

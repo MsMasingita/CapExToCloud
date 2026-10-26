@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   Zap, 
   ArrowLeft, 
@@ -14,11 +14,14 @@ import {
   Sparkles, 
   ChevronRight, 
   Cpu,
-  RefreshCw
+  RefreshCw,
+  Lock,
+  Globe
 } from 'lucide-react';
 
 export interface ScreenBoardroomDefenseProps {
   xp: number;
+  challenges?: any[];
   onRestart: () => void;
   onBack: () => void;
   onProceedToTransfer?: () => void;
@@ -30,7 +33,7 @@ interface ExecutiveChallenge {
   role: string;
   location: string;
   flag: string;
-  avatarId: 'chinedu' | 'wanjiku' | 'kagiso';
+  avatarId: 'chinedu' | 'wanjiku' | 'kagiso' | 'adeyemi' | 'naledi' | 'kofi';
   objection: string;
   zawadiWhisper: string;
   options: {
@@ -42,7 +45,7 @@ interface ExecutiveChallenge {
   }[];
 }
 
-const BOARD_CHALLENGES: ExecutiveChallenge[] = [
+const DEFAULT_BOARD_CHALLENGES: ExecutiveChallenge[] = [
   {
     id: 1,
     executive: 'Chinedu Okafor',
@@ -217,11 +220,11 @@ function ConfettiCanvas() {
   );
 }
 
-function ExecutiveAvatar({ avatarId, state }: { avatarId: 'chinedu' | 'wanjiku' | 'kagiso'; state: 'neutral' | 'approving' | 'skeptical' }) {
+function ExecutiveAvatar({ avatarId, state }: { avatarId: 'chinedu' | 'wanjiku' | 'kagiso' | 'adeyemi' | 'naledi' | 'kofi'; state: 'neutral' | 'approving' | 'skeptical' }) {
   const isApproving = state === 'approving';
   const isSkeptical = state === 'skeptical';
 
-  if (avatarId === 'chinedu') {
+  if (avatarId === 'chinedu' || avatarId === 'adeyemi') {
     return (
       <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-sky-600 to-indigo-900 p-1 shadow-lg shadow-sky-950/40 border border-sky-500/30 overflow-hidden shrink-0">
         <svg viewBox="0 0 100 100" className="w-full h-full">
@@ -263,7 +266,7 @@ function ExecutiveAvatar({ avatarId, state }: { avatarId: 'chinedu' | 'wanjiku' 
     );
   }
 
-  if (avatarId === 'wanjiku') {
+  if (avatarId === 'wanjiku' || avatarId === 'naledi') {
     return (
       <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-900 p-1 shadow-lg shadow-emerald-950/40 border border-emerald-500/30 overflow-hidden shrink-0">
         <svg viewBox="0 0 100 100" className="w-full h-full">
@@ -347,17 +350,68 @@ function ExecutiveAvatar({ avatarId, state }: { avatarId: 'chinedu' | 'wanjiku' 
 
 export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({ 
   xp, 
+  challenges,
   onRestart, 
   onBack, 
   onProceedToTransfer 
 }) => {
+  const isCustomDomain = Boolean(challenges && challenges.length > 0);
+
+  const activeChallenges: ExecutiveChallenge[] = useMemo(() => {
+    if (!isCustomDomain) {
+      return DEFAULT_BOARD_CHALLENGES;
+    }
+
+    const flagMap: Record<string, string> = {
+      Kenya: '🇰🇪',
+      'South Africa': '🇿🇦',
+      Ghana: '🇬🇭',
+      Nigeria: '🇳🇬'
+    };
+
+    const avatarMap: Record<number, 'adeyemi' | 'naledi' | 'kofi'> = {
+      0: 'adeyemi',
+      1: 'naledi',
+      2: 'kofi'
+    };
+
+    return challenges.map((c: any, idx: number) => {
+      let flag = '🌍';
+      if (c.boardMemberLocation) {
+        Object.keys(flagMap).forEach((country) => {
+          if (c.boardMemberLocation.includes(country)) {
+            flag = flagMap[country];
+          }
+        });
+      }
+
+      return {
+        id: idx + 1,
+        executive: c.boardMemberName || 'Executive',
+        role: c.boardMemberRole || 'Board Member',
+        location: c.boardMemberLocation || 'Regional Headquarters',
+        flag,
+        avatarId: avatarMap[idx % 3],
+        objection: c.dialogue.startsWith('"') ? c.dialogue : `"${c.dialogue}"`,
+        zawadiWhisper: c.earPieceGuidance || 'Review the core AZ-900 governance architecture principles.',
+        options: (c.options || []).map((opt: any) => ({
+          id: opt.id,
+          text: opt.text,
+          isOptimal: Boolean(opt.isOptimal),
+          feedback: opt.feedback,
+          points: opt.points ?? (opt.isOptimal ? 75 : 0)
+        }))
+      };
+    });
+  }, [challenges, isCustomDomain]);
+
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
   const [earnedBonusXp, setEarnedBonusXp] = useState<number>(0);
   const [confidenceScore, setConfidenceScore] = useState<number>(20);
   const [defenseFinished, setDefenseFinished] = useState<boolean>(false);
 
-  const currentChallenge = BOARD_CHALLENGES[currentStep];
+  const currentChallenge = activeChallenges[currentStep] || activeChallenges[0];
   const chosenOptionId = selectedAnswers[currentChallenge.id];
   const chosenOption = currentChallenge.options.find((o) => o.id === chosenOptionId);
 
@@ -381,27 +435,25 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
   };
 
   const handleNextChallenge = () => {
-    if (currentStep < BOARD_CHALLENGES.length - 1) {
+    if (currentStep < activeChallenges.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
       setDefenseFinished(true);
     }
   };
 
-  // Find challenges where the selected option was suboptimal
-  const missedChallenges = BOARD_CHALLENGES.filter((challenge) => {
+  const missedChallenges = activeChallenges.filter((challenge) => {
     const answeredId = selectedAnswers[challenge.id];
     const option = challenge.options.find((o) => o.id === answeredId);
     return !option || !option.isOptimal;
   });
 
-  // Targeted Retry: Clear only the incorrect answers, recalculate score, and resume at the first missed question
   const handleReviseMissed = () => {
     const updatedAnswers = { ...selectedAnswers };
     let recalculatedXp = 0;
     let recalculatedConfidence = 20;
 
-    BOARD_CHALLENGES.forEach((challenge) => {
+    activeChallenges.forEach((challenge) => {
       const answeredId = selectedAnswers[challenge.id];
       const opt = challenge.options.find((o) => o.id === answeredId);
       if (opt && opt.isOptimal) {
@@ -417,8 +469,7 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
     setConfidenceScore(recalculatedConfidence);
     setDefenseFinished(false);
 
-    // Jump immediately to the first missed challenge
-    const firstMissedIndex = BOARD_CHALLENGES.findIndex((challenge) => {
+    const firstMissedIndex = activeChallenges.findIndex((challenge) => {
       const answeredId = selectedAnswers[challenge.id];
       const opt = challenge.options.find((o) => o.id === answeredId);
       return !opt || !opt.isOptimal;
@@ -452,10 +503,12 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
                 <span className="text-[11px] font-bold tracking-wider uppercase text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
                   <Cpu className="w-3.5 h-3.5" /> Stage 6: Boardroom Cross-Examination
                 </span>
-                <span className="text-xs text-slate-400 font-medium">Domain 1: Cloud Computing Concepts Capstone</span>
+                <span className="text-xs text-slate-400 font-medium">
+                  {isCustomDomain ? 'Domain 3: Governance, Security & Management Capstone' : 'Domain 1: Cloud Computing Concepts Capstone'}
+                </span>
               </div>
               <h2 className="text-2xl font-black tracking-tight text-white">
-                Executive Modernization Charter Defense
+                {isCustomDomain ? 'Pan-African Governance Boardroom Defense' : 'Executive Modernization Charter Defense'}
               </h2>
             </div>
           </div>
@@ -491,7 +544,7 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
               </div>
 
               <div className="flex justify-between text-[11px] text-slate-500">
-                <span>Executive {currentStep + 1} of {BOARD_CHALLENGES.length}</span>
+                <span>Executive {currentStep + 1} of {activeChallenges.length}</span>
                 <span>Unanimous Charter Threshold: 70%</span>
               </div>
             </div>
@@ -515,7 +568,7 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
 
                 <div className="text-right">
                   <span className="text-[10px] font-mono text-slate-400 bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800 block">
-                    Challenge {currentChallenge.id}/3
+                    Challenge {currentChallenge.id}/{activeChallenges.length}
                   </span>
                   {chosenOption && (
                     <span className={`text-[10px] font-bold mt-1 inline-block ${
@@ -596,7 +649,7 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
                     onClick={handleNextChallenge}
                     className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-6 py-2.5 rounded-xl flex items-center gap-2 text-xs transition cursor-pointer shadow-lg shadow-emerald-500/20"
                   >
-                    {currentStep < BOARD_CHALLENGES.length - 1 ? 'Proceed to Next Executive' : 'View Executive Final Verdict'}
+                    {currentStep < activeChallenges.length - 1 ? 'Proceed to Next Executive' : 'View Executive Final Verdict'}
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -619,16 +672,22 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
                   ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' 
                   : 'text-amber-400 bg-amber-500/10 border-amber-500/30'
               }`}>
-                {isApproved ? 'Domain 1: Cloud Computing Concepts Capstone Complete' : 'Consensus Below 70% Threshold'}
+                {isApproved 
+                  ? (isCustomDomain ? 'Domain 3: Governance, Security & Management Complete' : 'Domain 1: Cloud Computing Concepts Capstone Complete') 
+                  : 'Consensus Below 70% Threshold'}
               </span>
 
               <h3 className="text-2xl md:text-3xl font-black text-white">
-                {isApproved ? 'Proposal Approved! Modernization Charter Signed' : 'Executive Consensus Withheld'}
+                {isApproved 
+                  ? (isCustomDomain ? 'Governance Charter Signed! Pan-African Subscriptions Secured' : 'Proposal Approved! Modernization Charter Signed') 
+                  : 'Executive Consensus Withheld'}
               </h3>
 
               <p className="text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
                 {isApproved 
-                  ? 'Chief Chinedu Okafor (CITO), Wanjiku Mutua (VP Operations), and Kagiso Ndlovu (Financial Controller) have signed off unanimously on Project SoleSpace. Basement hardware is decommissioned and the Azure PaaS transition begins.'
+                  ? (isCustomDomain 
+                      ? 'Prof. Adeyemi (Finance), Advocate Naledi Khumalo (Legal), and Kofi Mensah (CISO) have signed off unanimously on the EduBridge Governance Charter. Policies, locks, and RBAC guardrails are now locked across all 12 African nations.' 
+                      : 'Chief Chinedu Okafor (CITO), Wanjiku Mutua (VP Operations), and Kagiso Ndlovu (Financial Controller) have signed off unanimously on Project SoleSpace. Basement hardware is decommissioned and the Azure PaaS transition begins.')
                   : `You reached ${confidenceScore}% consensus, but the executive panel requires at least 70% unanimous consensus before signing off on the cloud transfer order. Several executives remain skeptical of your risk and cost governance arguments.`}
               </p>
             </div>
@@ -673,8 +732,14 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
 
               <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-1">
                 <span className="text-[10px] font-bold text-slate-400 uppercase">AZ-900 Competency</span>
-                <p className="text-2xl font-black text-sky-400">{isApproved ? 'Domain 1 (100%)' : 'In Progress'}</p>
-                <p className="text-[11px] text-slate-400">Cloud Computing Concepts</p>
+                <p className="text-2xl font-black text-sky-400">
+                  {isApproved 
+                    ? (isCustomDomain ? 'Domain 3 (100%)' : 'Domain 1 (100%)') 
+                    : 'In Progress'}
+                </p>
+                <p className="text-[11px] text-slate-400">
+                  {isCustomDomain ? 'Governance, Security & Management' : 'Cloud Computing Concepts'}
+                </p>
               </div>
             </div>
 
@@ -685,15 +750,31 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
                   Badges &amp; Credentials Unlocked
                 </span>
                 <div className="flex flex-wrap gap-2">
-                  <span className="text-xs bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5">
-                    <ShieldCheck className="w-3.5 h-3.5" /> OpEx Financial Strategist
-                  </span>
-                  <span className="text-xs bg-sky-500/10 text-sky-300 border border-sky-500/30 px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5">
-                    <TrendingUp className="w-3.5 h-3.5" /> High Availability Architect
-                  </span>
-                  <span className="text-xs bg-purple-500/10 text-purple-300 border border-purple-500/30 px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5">
-                    <Award className="w-3.5 h-3.5" /> Boardroom Defender
-                  </span>
+                  {isCustomDomain ? (
+                    <>
+                      <span className="text-xs bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5">
+                        <Globe className="w-3.5 h-3.5" /> Sovereign Data Guardian
+                      </span>
+                      <span className="text-xs bg-amber-500/10 text-amber-300 border border-amber-500/30 px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5">
+                        <Lock className="w-3.5 h-3.5" /> Resource Lock Protector
+                      </span>
+                      <span className="text-xs bg-sky-500/10 text-sky-300 border border-sky-500/30 px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5">
+                        <ShieldCheck className="w-3.5 h-3.5" /> Zero Trust RBAC Enforcer
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-xs bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5">
+                        <ShieldCheck className="w-3.5 h-3.5" /> OpEx Financial Strategist
+                      </span>
+                      <span className="text-xs bg-sky-500/10 text-sky-300 border border-sky-500/30 px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5">
+                        <TrendingUp className="w-3.5 h-3.5" /> High Availability Architect
+                      </span>
+                      <span className="text-xs bg-purple-500/10 text-purple-300 border border-purple-500/30 px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5">
+                        <Award className="w-3.5 h-3.5" /> Boardroom Defender
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
             )}
@@ -720,7 +801,7 @@ export const ScreenBoardroomDefense: React.FC<ScreenBoardroomDefenseProps> = ({
                     onClick={onProceedToTransfer}
                     className="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-black transition flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/20"
                   >
-                    <span>Accept Transfer &amp; Preview Module 2 (+250 XP)</span>
+                    <span>Accept Transfer &amp; Complete Domain (+250 XP)</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 )
